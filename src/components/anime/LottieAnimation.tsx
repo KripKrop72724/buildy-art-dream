@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import Lottie from 'lottie-react';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
+import { SafeImage } from '@/components/ui/safe-image';
 
 interface LottieAnimationProps {
   animationPath: string;
@@ -26,6 +27,7 @@ export const LottieAnimation = ({
 }: LottieAnimationProps) => {
   const { isSeriousMode } = useSeriousMode();
   const [animationData, setAnimationData] = useState(null);
+  const [useFallback, setUseFallback] = useState(false);
   const [isPlaying, setIsPlaying] = useState(autoplay);
   const [isInView, setIsInView] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -39,23 +41,87 @@ export const LottieAnimation = ({
     xl: 'w-64 h-64'
   };
 
-  // Load Lottie animation data
+  // Load Lottie animation data with asset normalization and preloading
   useEffect(() => {
     if (isSeriousMode) return;
 
-    const loadAnimation = async () => {
+    let cancelled = false;
+    setUseFallback(false);
+
+    const baseFromPath = () => {
+      if (animationPath.includes('buildy-idle-wave')) return '/anime/mascots/';
+      if (animationPath.includes('pest')) return '/anime/pests/';
+      if (animationPath.includes('droplet')) return '/anime/effects/';
+      return '/anime/';
+    };
+
+    const normalize = (data: any) => {
+      const cloned = { ...data, assets: Array.isArray(data.assets) ? data.assets.map((a: any) => ({ ...a })) : [] };
+      const base = baseFromPath();
+      cloned.assets?.forEach((a: any) => {
+        if (a.p && !/^https?:\/\//.test(a.p)) {
+          const url = a.p.startsWith('/') ? a.p : `${base}${a.p}`;
+          a.u = '';
+          a.p = url;
+        }
+      });
+      return cloned;
+    };
+
+    const preloadAssets = async (assets: any[]) => {
+      if (!assets?.length) return true;
+      const results = await Promise.all(
+        assets
+          .filter((a) => a.p)
+          .map(
+            (a: any) =>
+              new Promise<boolean>((resolve) => {
+                const img = new Image();
+                img.onload = () => resolve(true);
+                img.onerror = () => resolve(false);
+                img.src = a.p;
+              })
+          )
+      );
+      return results.every(Boolean);
+    };
+
+    const load = async () => {
       try {
         const response = await fetch(animationPath);
-        if (response.ok) {
-          const data = await response.json();
-          setAnimationData(data);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const raw = await response.json();
+        const normalized = normalize(raw);
+        const ok = await preloadAssets(normalized.assets || []);
+        if (cancelled) return;
+        if (!ok) {
+          console.warn('Lottie assets failed to load, using static fallback:', animationPath);
+          setUseFallback(true);
+          setAnimationData(null);
+          return;
         }
+        setAnimationData(normalized);
       } catch (error) {
+        if (cancelled) return;
         console.warn(`Failed to load Lottie animation: ${animationPath}`, error);
+        setUseFallback(true);
+        setAnimationData(null);
       }
     };
 
-    loadAnimation();
+    const watchdog = window.setTimeout(() => {
+      if (!cancelled && !animationData) {
+        console.warn('Lottie timed out, using fallback:', animationPath);
+        setUseFallback(true);
+      }
+    }, 1800);
+
+    load();
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(watchdog);
+    };
   }, [animationPath, isSeriousMode]);
 
   // Intersection Observer for viewport trigger
@@ -96,20 +162,16 @@ export const LottieAnimation = ({
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <img 
+        <SafeImage 
           src={fallbackImage || '/anime/static/buildy-static.png'} 
           alt="Service illustration" 
           className="w-full h-full object-contain"
-          onError={(e) => {
-            // Fallback to static buildy if image fails
-            e.currentTarget.src = '/anime/static/buildy-static.png';
-          }}
         />
       </motion.div>
     );
   }
 
-  if (!animationData) {
+  if (useFallback || !animationData) {
     return (
       <motion.div 
         className={`${sizeClasses[size]} ${className} flex items-center justify-center`}
@@ -117,14 +179,10 @@ export const LottieAnimation = ({
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
       >
-        <img 
+        <SafeImage 
           src={fallbackImage || '/anime/static/buildy-static.png'}
           alt="Service illustration"
           className="w-full h-full object-contain"
-          onError={(e) => {
-            // Ultimate fallback
-            e.currentTarget.src = '/anime/static/buildy-static.png';
-          }}
         />
       </motion.div>
     );
@@ -165,6 +223,7 @@ export const LottieAnimation = ({
         loop={loop}
         autoplay={false} // We control this manually
         onComplete={onComplete}
+        rendererSettings={{ preserveAspectRatio: 'xMidYMid meet', progressiveLoad: true }}
         style={{ width: '100%', height: '100%' }}
       />
     </motion.div>
