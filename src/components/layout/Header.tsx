@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Globe, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useDirection } from '@/hooks/useDirection';
+import { SeriousModeToggle } from '@/components/anime/SeriousModeToggle';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -113,6 +114,9 @@ export const Header = () => {
 
           {/* Actions */}
           <div className="flex items-center space-x-4">
+            {/* Serious Mode Toggle */}
+            <SeriousModeToggle />
+            
             {/* Language Toggle */}
             <Button
               variant="ghost"
