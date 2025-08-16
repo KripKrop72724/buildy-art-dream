@@ -8,6 +8,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { PoolMaintenanceLottie, PestControlLottie, DeepCleaningLottie } from '@/components/anime/LottieAnimation';
 import { ScrollTriggeredAnimation } from '@/components/anime/ScrollTriggeredAnimation';
 import { MultiStepContactForm } from '@/components/forms/MultiStepContactForm';
+import { AnimatedHeroCarousel } from '@/components/anime/AnimatedHeroCarousel';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 
 const Home = () => {
@@ -127,83 +128,8 @@ const Home = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section with 3 Lottie Animations */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-background via-background to-card/50 py-20">
-        <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <h1 className="text-5xl lg:text-6xl font-display font-bold mb-6 text-foreground">
-                {t('home.hero.title')}
-              </h1>
-              <p className="text-xl text-muted-foreground mb-8 font-body max-w-lg">
-                {t('home.hero.subtitle')}
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                <Button variant="kawaii" size="kawaii">
-                  <Link to="/services" className="flex items-center">
-                    {t('home.hero.cta')}
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Link>
-                </Button>
-                <Button variant="outline" size="lg" asChild>
-                  <a href={`tel:${t('common.phone').replace(/\s/g, '')}`}>
-                    {t('common.callNow')}
-                  </a>
-                </Button>
-              </div>
-
-              {/* Trust Badges */}
-              <div className="flex items-center gap-4">
-                <img src="/anime/badges/uae-certified.png" alt="UAE Certified" className="w-12 h-12" />
-                <img src="/anime/badges/family-safe.png" alt="Family Safe" className="w-12 h-12" />
-                <img src="/anime/badges/24-7-service.png" alt="24/7 Service" className="w-12 h-12" />
-                <img src="/anime/badges/satisfaction-guarantee.png" alt="Satisfaction Guarantee" className="w-12 h-12" />
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="relative"
-            >
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-4">
-                  <PoolMaintenanceLottie 
-                    size="lg" 
-                    trigger="viewport"
-                    className="animate-float"
-                  />
-                  <PestControlLottie 
-                    size="lg" 
-                    trigger="viewport"
-                    className="animate-chibi-bounce"
-                  />
-                </div>
-                <div className="flex items-center">
-                  <DeepCleaningLottie 
-                    size="xl" 
-                    trigger="viewport"
-                    className="animate-float"
-                  />
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-
-        {/* Decorative Elements */}
-        {!isSeriousMode && (
-          <>
-            <div className="absolute top-20 left-10 w-20 h-20 bg-primary/10 rounded-full animate-float" />
-            <div className="absolute bottom-20 right-10 w-32 h-32 bg-secondary/10 rounded-full animate-chibi-bounce" />
-          </>
-        )}
-      </section>
+      {/* Animated Hero Carousel */}
+      <AnimatedHeroCarousel />
 
       {/* Stats Section */}
       <section className="py-16 bg-card/50">

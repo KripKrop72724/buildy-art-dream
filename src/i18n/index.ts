@@ -41,7 +41,25 @@ const resources = {
         hero: {
           title: 'Professional Building Care Services in UAE',
           subtitle: 'From pool maintenance to pest control - we keep your property pristine with our kawaii touch',
-          cta: 'Explore Services'
+          cta: 'Explore Services',
+          pool: {
+            title: 'Crystal Clear Pools, Year-Round Bliss',
+            subtitle: 'Professional pool maintenance that keeps your oasis sparkling clean and swim-ready',
+            benefits: ['Weekly maintenance', 'Chemical balancing', 'Emergency repairs', 'Equipment servicing'],
+            primaryCta: 'Book Free Pool Inspection'
+          },
+          pest: {
+            title: 'Gentle Pest Solutions That Work',
+            subtitle: 'Family-safe treatments that effectively protect your home from unwanted visitors',
+            benefits: ['Family-safe treatments', 'Pet-friendly', 'Follow-up visits', 'Warranty included'],
+            primaryCta: 'Book Free Pest Inspection'
+          },
+          deepClean: {
+            title: 'Deep Clean Magic That Sparkles',
+            subtitle: 'Eco-friendly deep cleaning that transforms every corner of your space',
+            benefits: ['Eco-friendly products', 'Post-clean inspection', 'Satisfaction guarantee', 'Room-by-room care'],
+            primaryCta: 'Book Free Cleaning Quote'
+          }
         }
       },
       // Services
