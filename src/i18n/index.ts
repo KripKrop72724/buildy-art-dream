@@ -47,7 +47,11 @@ const resources = {
             subtitle: 'Professional pool maintenance that keeps your oasis sparkling clean and swim-ready',
             storyCaption: 'Watch our expert team transform your pool into a pristine paradise',
             benefits: ['Weekly maintenance', 'Chemical balancing', 'Emergency repairs', 'Equipment servicing'],
-            primaryCta: 'Book Free Pool Inspection'
+            primaryCta: 'Book Free Pool Inspection',
+            benefit1: 'Professional deep cleaning',
+            benefit2: 'Chemical balancing and testing',
+            benefit3: 'Equipment maintenance and repairs',
+            badge: 'Pool Perfected! 🏊‍♂️'
           },
           pest: {
             title: 'Gentle Pest Solutions That Work',
@@ -55,7 +59,10 @@ const resources = {
             storyCaption: 'See how we make pests retreat while keeping your family safe',
             benefits: ['Family-safe treatments', 'Pet-friendly', 'Follow-up visits', 'Warranty included'],
             primaryCta: 'Book Free Pest Inspection',
-            badge: 'Pests retreating! 🏃‍♂️💨'
+            badge: 'Mission Accomplished! 🛡️',
+            benefit1: 'Family-safe treatment methods',
+            benefit2: '24/7 pest monitoring',
+            benefit3: '100% satisfaction guarantee'
           },
           deepClean: {
             title: 'Deep Clean Magic That Sparkles',
@@ -63,7 +70,14 @@ const resources = {
             storyCaption: 'Experience the magical transformation of deep cleaning excellence',
             benefits: ['Eco-friendly products', 'Post-clean inspection', 'Satisfaction guarantee', 'Room-by-room care'],
             primaryCta: 'Book Free Cleaning Quote',
-            badge: 'Sparkling Clean! ✨'
+            badge: 'Spotless Perfection! 🌟',
+            benefit1: 'Professional grade equipment',
+            benefit2: 'Eco-friendly cleaning products',
+            benefit3: 'Detailed cleaning checklist'
+          },
+          cta: {
+            whatsapp: 'Get Quote on WhatsApp',
+            learnMore: 'Learn More'
           }
         }
       },
@@ -135,7 +149,11 @@ const resources = {
             subtitle: 'صيانة مسابح مهنية تحافظ على واحة منزلك نظيفة وجاهزة للسباحة',
             storyCaption: 'شاهد فريقنا الخبير يحول مسبحك إلى جنة نظيفة',
             benefits: ['صيانة أسبوعية', 'توازن المواد الكيميائية', 'إصلاحات طارئة', 'خدمة المعدات'],
-            primaryCta: 'احجز فحص مسبح مجاني'
+            primaryCta: 'احجز فحص مسبح مجاني',
+            benefit1: 'تنظيف عميق احترافي',
+            benefit2: 'توازن المواد الكيميائية والاختبار',
+            benefit3: 'صيانة وإصلاح المعدات',
+            badge: 'مسبح مثالي! 🏊‍♂️'
           },
           pest: {
             title: 'حلول لطيفة ضد الآفات تعمل بفعالية',
@@ -143,7 +161,10 @@ const resources = {
             storyCaption: 'شاهد كيف نجعل الآفات تتراجع مع الحفاظ على سلامة عائلتك',
             benefits: ['علاجات آمنة للعائلة', 'صديقة للحيوانات الأليفة', 'زيارات متابعة', 'ضمان مشمول'],
             primaryCta: 'احجز فحص آفات مجاني',
-            badge: 'الآفات تتراجع! 🏃‍♂️💨'
+            badge: 'تمت المهمة! 🛡️',
+            benefit1: 'طرق علاج آمنة للعائلة',
+            benefit2: 'مراقبة الآفات على مدار الساعة',
+            benefit3: 'ضمان الرضا 100%'
           },
           deepClean: {
             title: 'سحر التنظيف العميق الذي يلمع',
@@ -151,7 +172,14 @@ const resources = {
             storyCaption: 'اختبر التحول السحري لتميز التنظيف العميق',
             benefits: ['منتجات صديقة للبيئة', 'فحص ما بعد التنظيف', 'ضمان الرضا', 'العناية غرفة بغرفة'],
             primaryCta: 'احجز عرض تنظيف مجاني',
-            badge: 'نظافة براقة! ✨'
+            badge: 'مثالية بلا عيوب! 🌟',
+            benefit1: 'معدات احترافية',
+            benefit2: 'منتجات تنظيف صديقة للبيئة',
+            benefit3: 'قائمة تنظيف مفصلة'
+          },
+          cta: {
+            whatsapp: 'احصل على عرض أسعار على واتساب',
+            learnMore: 'اعرف أكثر'
           }
         }
       },

@@ -1,95 +1,102 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { HeroSlide } from './HeroSlide';
-import { useSeriousMode } from '@/contexts/SeriousModeContext';
-import { useTranslation } from 'react-i18next';
-
-interface HeroSlideData {
-  id: string;
-  service: 'pool' | 'pest' | 'deepClean';
-  animationType: 'squeegee' | 'pestRetreat' | 'sparkle';
-  lottieAnimation: string;
-  staticFallback: string;
-  durationMs: number;
-}
+import { Button } from '../ui/button';
+import { HeroSlide, type HeroSlideData } from './HeroSlide';
+import { useSeriousMode } from '../../contexts/SeriousModeContext';
+import { NarrativeBridge } from './NarrativeBridge';
+import { preloadLottieAssets } from './LottieAnimation';
 
 const slides: HeroSlideData[] = [
   {
-    id: 'pool',
     service: 'pool',
     animationType: 'squeegee',
-    lottieAnimation: '/anime/lottie/buildy-idle-wave.json',
-    staticFallback: '/anime/static/buildy-static.png',
+    animationPath: '/anime/lottie/buildy-idle-wave.json',
+    fallbackImage: '/anime/static/buildy-static.png',
     durationMs: 8000
   },
   {
-    id: 'pest',
     service: 'pest',
-    animationType: 'pestRetreat',
-    lottieAnimation: '/anime/lottie/pest-retreat.json',
-    staticFallback: '/anime/static/pest-static.png',
+    animationType: 'pest-retreat',
+    animationPath: '/anime/lottie/pest-retreat.json',
+    fallbackImage: '/anime/static/pest-static.png',
     durationMs: 8000
   },
   {
-    id: 'deepClean',
     service: 'deepClean',
-    animationType: 'sparkle',
-    lottieAnimation: '/anime/lottie/droplet-hop.json',
-    staticFallback: '/anime/static/buildy-static.png',
+    animationType: 'sparkle-burst',
+    animationPath: '/anime/lottie/droplet-hop.json',
+    fallbackImage: '/anime/static/buildy-static.png',
     durationMs: 8000
   }
 ];
 
-export const AnimatedHeroCarousel = () => {
+export const AnimatedHeroCarousel: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [userInteracted, setUserInteracted] = useState(false);
   const { isSeriousMode } = useSeriousMode();
-  const { t } = useTranslation();
 
-  // Auto-advance slides with slide-specific duration
+  // Auto-advance slides based on their duration
   useEffect(() => {
-    if (!isAutoPlaying) return;
+    if (isPaused || isSeriousMode || isTransitioning) return;
 
-    const currentDuration = slides[currentSlide].durationMs;
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, currentDuration);
+    const currentSlideDuration = slides[currentSlide]?.durationMs || 8000;
+    // Add extra pause time if user recently interacted
+    const pauseBonus = userInteracted ? 2000 : 0;
+    
+    const timer = setTimeout(() => {
+      if (!userInteracted) {
+        handleSlideTransition((currentSlide + 1) % slides.length);
+      }
+    }, currentSlideDuration + pauseBonus);
 
-    return () => clearInterval(interval);
-  }, [isAutoPlaying, currentSlide]);
+    return () => clearTimeout(timer);
+  }, [currentSlide, isPaused, isSeriousMode, isTransitioning, userInteracted]);
+
+  // Reset user interaction flag after a delay
+  useEffect(() => {
+    if (userInteracted) {
+      const timer = setTimeout(() => setUserInteracted(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [userInteracted]);
 
   // Preload next slide assets
   useEffect(() => {
     const nextSlideIndex = (currentSlide + 1) % slides.length;
     const nextSlide = slides[nextSlideIndex];
     
-    // Preload Lottie JSON
-    if (nextSlide.lottieAnimation) {
-      fetch(nextSlide.lottieAnimation).catch(() => {});
+    if (nextSlide?.animationPath) {
+      preloadLottieAssets(nextSlide.animationPath, nextSlide.fallbackImage);
     }
-    
-    // Preload fallback image
-    if (nextSlide.staticFallback) {
-      const img = new Image();
-      img.src = nextSlide.staticFallback;
+  }, [currentSlide, slides]);
+
+  const handleSlideTransition = (targetIndex: number) => {
+    if (targetIndex !== currentSlide && !isTransitioning) {
+      setIsTransitioning(true);
+      // Brief delay before changing slide to show transition effect
+      setTimeout(() => {
+        setCurrentSlide(targetIndex);
+        setTimeout(() => setIsTransitioning(false), 600);
+      }, 300);
     }
-  }, [currentSlide]);
+  };
 
   const goToSlide = (index: number) => {
-    setCurrentSlide(index);
-    setIsAutoPlaying(false);
-    // Re-enable auto-play after 2 seconds to avoid jarring mid-sequence changes
-    setTimeout(() => setIsAutoPlaying(true), 2000);
+    setUserInteracted(true);
+    handleSlideTransition(index);
   };
 
   const nextSlide = () => {
-    goToSlide((currentSlide + 1) % slides.length);
+    setUserInteracted(true);
+    handleSlideTransition((currentSlide + 1) % slides.length);
   };
 
   const prevSlide = () => {
-    goToSlide(currentSlide === 0 ? slides.length - 1 : currentSlide - 1);
+    setUserInteracted(true);
+    handleSlideTransition((currentSlide - 1 + slides.length) % slides.length);
   };
 
   return (
@@ -100,21 +107,34 @@ export const AnimatedHeroCarousel = () => {
       {/* Carousel Container */}
       <div 
         className="relative min-h-[80vh]"
-        onMouseEnter={() => setIsAutoPlaying(false)}
-        onMouseLeave={() => setIsAutoPlaying(true)}
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
       >
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentSlide}
-            initial={{ opacity: 0, x: 300 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -300 }}
-            transition={{ duration: 0.6, ease: "easeInOut" }}
-            className="absolute inset-0"
-          >
-            <HeroSlide data={slides[currentSlide]} />
-          </motion.div>
-        </AnimatePresence>
+        <div className="relative h-full overflow-hidden">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentSlide}
+              initial={{ opacity: 0, x: 300 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -300 }}
+              transition={{
+                duration: 0.8,
+                ease: [0.4, 0, 0.2, 1]
+              }}
+              className="h-full"
+            >
+              <HeroSlide data={slides[currentSlide]} />
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Narrative Bridge Transitions */}
+          <NarrativeBridge
+            isActive={isTransitioning}
+            fromService={slides[currentSlide]?.service || ''}
+            toService={slides[(currentSlide + 1) % slides.length]?.service || ''}
+            onComplete={() => {}}
+          />
+        </div>
 
         {/* Navigation Arrows */}
         {!isSeriousMode && (
@@ -154,12 +174,12 @@ export const AnimatedHeroCarousel = () => {
               }`}
               aria-label={`Go to slide ${index + 1}`}
             >
-              {index === currentSlide && isAutoPlaying && (
+              {index === currentSlide && !isPaused && !isTransitioning && (
                 <motion.div
                   className="w-full h-full rounded-full bg-primary"
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  transition={{ duration: 5, ease: "linear" }}
+                  transition={{ duration: (slides[currentSlide]?.durationMs || 8000) / 1000, ease: "linear" }}
                 />
               )}
             </button>
@@ -186,3 +206,5 @@ export const AnimatedHeroCarousel = () => {
     </section>
   );
 };
+
+export type { HeroSlideData };
