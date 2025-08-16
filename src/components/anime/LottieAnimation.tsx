@@ -88,18 +88,45 @@ export const LottieAnimation = ({
   }, [isPlaying, isInView, trigger]);
 
   // Serious mode or fallback
-  if (isSeriousMode || !animationData) {
-    return fallbackImage ? (
-      <motion.img
-        src={fallbackImage}
-        alt="BuildCare service illustration"
-        className={`${sizeClasses[size]} object-contain ${className}`}
-        initial={{ opacity: 0, scale: 0.9 }}
+  if (isSeriousMode) {
+    return (
+      <motion.div
+        className={`${sizeClasses[size]} ${className} flex items-center justify-center`}
+        initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
-      />
-    ) : (
-      <div className={`${sizeClasses[size]} bg-muted/20 rounded-lg ${className}`} />
+      >
+        <img 
+          src={fallbackImage || '/anime/static/buildy-static.png'} 
+          alt="Service illustration" 
+          className="w-full h-full object-contain"
+          onError={(e) => {
+            // Fallback to static buildy if image fails
+            e.currentTarget.src = '/anime/static/buildy-static.png';
+          }}
+        />
+      </motion.div>
+    );
+  }
+
+  if (!animationData) {
+    return (
+      <motion.div 
+        className={`${sizeClasses[size]} ${className} flex items-center justify-center`}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        <img 
+          src={fallbackImage || '/anime/static/buildy-static.png'}
+          alt="Service illustration"
+          className="w-full h-full object-contain"
+          onError={(e) => {
+            // Ultimate fallback
+            e.currentTarget.src = '/anime/static/buildy-static.png';
+          }}
+        />
+      </motion.div>
     );
   }
 

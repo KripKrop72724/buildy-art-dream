@@ -144,9 +144,21 @@ export const AnimatedHeroCarousel = () => {
           ))}
         </div>
 
-        {/* Slide Counter */}
-        <div className="absolute top-6 right-6 bg-background/80 backdrop-blur-sm rounded-full px-3 py-1 text-sm text-muted-foreground">
-          {currentSlide + 1} / {slides.length}
+        {/* Slide Counter & Serious Mode Indicator */}
+        <div className="absolute top-6 right-6 flex items-center gap-3">
+          <div className="bg-background/80 backdrop-blur-sm rounded-full px-3 py-1 text-sm text-muted-foreground">
+            {currentSlide + 1} / {slides.length}
+          </div>
+          {isSeriousMode && (
+            <motion.div
+              className="bg-muted/90 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-medium text-muted-foreground border"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3 }}
+            >
+              💼 Professional Mode
+            </motion.div>
+          )}
         </div>
       </div>
     </section>

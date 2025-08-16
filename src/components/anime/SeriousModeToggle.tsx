@@ -52,9 +52,12 @@ export const SeriousModeToggle = () => {
             </div>
           </Button>
         </TooltipTrigger>
-        <TooltipContent>
-          <p>
-            {isSeriousMode ? 'Switch to Kawaii Mode' : 'Switch to Professional Mode'}
+        <TooltipContent side="bottom" className="bg-card border shadow-lg">
+          <p className="text-sm font-medium">
+            {isSeriousMode ? '🌸 Switch to Kawaii Mode' : '💼 Switch to Professional Mode'}
+          </p>
+          <p className="text-xs text-muted-foreground mt-1">
+            {isSeriousMode ? 'Enable cute animations & mascots' : 'Disable animations for business'}
           </p>
         </TooltipContent>
       </Tooltip>

@@ -44,58 +44,85 @@ export const HeroSlide = ({ data }: HeroSlideProps) => {
 
   const renderMicroInteraction = () => {
     if (isSeriousMode) return null;
-
+    
     switch (data.animationType) {
       case 'squeegee':
-        return <SqueegeEffectOverlay><div /></SqueegeEffectOverlay>;
-      case 'pestRetreat':
         return (
           <motion.div
-            className="absolute bottom-20 right-20 z-20"
-            initial={{ x: 0, opacity: 1 }}
-            animate={{ x: 100, opacity: 0 }}
-            transition={{ delay: 2, duration: 3, ease: "easeInOut" }}
+            className="absolute inset-0 pointer-events-none z-20"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 3 }}
           >
-            <img 
-              src="/anime/pests/pest-retreat-01.png" 
-              alt="Friendly pest retreating"
-              className="w-16 h-16"
-            />
+            <SqueegeEffectOverlay 
+              trigger={true}
+              className="absolute inset-0"
+            >
+              <div />
+            </SqueegeEffectOverlay>
           </motion.div>
+        );
+      case 'pestRetreat':
+        return (
+          <>
+            <motion.div
+              className="absolute bottom-10 right-10 z-30"
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 2.5, duration: 0.5 }}
+            >
+              <div className="bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 text-sm font-medium text-pest-foreground shadow-lg">
+                Pests retreating! 🏃‍♂️💨
+              </div>
+            </motion.div>
+            {/* Animated "retreat path" */}
+            <motion.div
+              className="absolute bottom-0 right-0 w-32 h-2 bg-gradient-to-l from-pest/30 to-transparent rounded-full"
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ delay: 2, duration: 1 }}
+            />
+          </>
         );
       case 'sparkle':
         return (
-          <motion.div
-            className="absolute inset-0 pointer-events-none z-10"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1, duration: 2 }}
-          >
+          <div className="absolute inset-0 pointer-events-none z-20">
             {[...Array(8)].map((_, i) => (
               <motion.div
                 key={i}
-                className="absolute"
+                className="absolute text-3xl"
                 style={{
-                  left: `${20 + (i * 10)}%`,
-                  top: `${30 + (i % 3) * 15}%`,
+                  left: Math.random() * 80 + 10 + '%',
+                  top: Math.random() * 80 + 10 + '%'
                 }}
-                initial={{ scale: 0, rotate: 0 }}
+                initial={{ scale: 0, rotate: 0, opacity: 0 }}
                 animate={{ 
-                  scale: [0, 1, 0], 
-                  rotate: [0, 360],
+                  scale: [0, 1.2, 0],
+                  rotate: [0, 180, 360],
                   opacity: [0, 1, 0]
                 }}
-                transition={{ 
-                  delay: i * 0.2,
-                  duration: 2,
+                transition={{
+                  duration: 2.5,
+                  delay: 1.5 + (i * 0.2),
                   repeat: Infinity,
-                  repeatDelay: 3
+                  repeatDelay: 4
                 }}
               >
                 ✨
               </motion.div>
             ))}
-          </motion.div>
+            {/* "Clean" status badge */}
+            <motion.div
+              className="absolute top-6 right-6 z-30"
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 4, duration: 0.5 }}
+            >
+              <div className="bg-accent/90 backdrop-blur-sm rounded-full px-4 py-2 text-sm font-medium text-accent-foreground shadow-lg">
+                Sparkling Clean! ✨
+              </div>
+            </motion.div>
+          </div>
         );
       default:
         return null;
@@ -138,13 +165,16 @@ export const HeroSlide = ({ data }: HeroSlideProps) => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.8 }}
             >
-              {['Weekly maintenance', 'Chemical balancing', 'Equipment repair', 'Emergency service'].map((benefit: string, index: number) => (
-                <span
+              {(t(`home.hero.${data.service}.benefits`, { returnObjects: true }) as string[]).map((benefit: string, index: number) => (
+                <motion.span
                   key={index}
-                  className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium"
+                  className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium border border-primary/20"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3, delay: 0.9 + (index * 0.1) }}
                 >
-                  {benefit}
-                </span>
+                  ✓ {benefit}
+                </motion.span>
               ))}
             </motion.div>
           </div>
@@ -154,34 +184,40 @@ export const HeroSlide = ({ data }: HeroSlideProps) => {
             className="flex flex-col sm:flex-row gap-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 1 }}
+            transition={{ duration: 0.6, delay: 1.2 }}
           >
-            <Button asChild size="lg" className="group">
-              <Link to={getServiceRoute(data.service)}>
+            <Button
+              size="lg"
+              className="btn-kawaii text-lg px-8 relative overflow-hidden group"
+              asChild
+            >
+              <a href={getWhatsAppLink(data.service)}>
                 {t(`home.hero.${data.service}.primaryCta`)}
+                <motion.div
+                  className="absolute inset-0 bg-white/20"
+                  initial={{ x: '-100%' }}
+                  animate={{ x: '100%' }}
+                  transition={{ 
+                    duration: 2, 
+                    delay: 2,
+                    repeat: Infinity, 
+                    repeatDelay: 4 
+                  }}
+                />
                 <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+              </a>
+            </Button>
+            
+            <Button
+              size="lg"
+              variant="outline"
+              className="text-lg hover:bg-primary/5"
+              asChild
+            >
+              <Link to={getServiceRoute(data.service)}>
+                {t('common.learnMore')}
               </Link>
             </Button>
-
-            <div className="flex gap-3">
-              <Button asChild variant="outline" size="lg">
-                <a href="tel:+971501234567">
-                  <Phone className="mr-2 h-4 w-4" />
-                  {t('common.callNow')}
-                </a>
-              </Button>
-
-              <Button asChild variant="outline" size="lg" className="bg-green-50 border-green-200 text-green-700 hover:bg-green-100">
-                <a 
-                  href={getWhatsAppLink(data.service)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <MessageCircle className="mr-2 h-4 w-4" />
-                  WhatsApp
-                </a>
-              </Button>
-            </div>
           </motion.div>
         </motion.div>
 
