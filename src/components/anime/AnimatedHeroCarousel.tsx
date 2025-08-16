@@ -12,6 +12,7 @@ interface HeroSlideData {
   animationType: 'squeegee' | 'pestRetreat' | 'sparkle';
   lottieAnimation: string;
   staticFallback: string;
+  durationMs: number;
 }
 
 const slides: HeroSlideData[] = [
@@ -20,21 +21,24 @@ const slides: HeroSlideData[] = [
     service: 'pool',
     animationType: 'squeegee',
     lottieAnimation: '/anime/lottie/buildy-idle-wave.json',
-    staticFallback: '/anime/static/buildy-static.png'
+    staticFallback: '/anime/static/buildy-static.png',
+    durationMs: 8000
   },
   {
     id: 'pest',
     service: 'pest',
     animationType: 'pestRetreat',
     lottieAnimation: '/anime/lottie/pest-retreat.json',
-    staticFallback: '/anime/static/pest-static.png'
+    staticFallback: '/anime/static/pest-static.png',
+    durationMs: 8000
   },
   {
     id: 'deepClean',
     service: 'deepClean',
     animationType: 'sparkle',
     lottieAnimation: '/anime/lottie/droplet-hop.json',
-    staticFallback: '/anime/static/buildy-static.png'
+    staticFallback: '/anime/static/buildy-static.png',
+    durationMs: 8000
   }
 ];
 
@@ -44,22 +48,40 @@ export const AnimatedHeroCarousel = () => {
   const { isSeriousMode } = useSeriousMode();
   const { t } = useTranslation();
 
-  // Auto-advance slides
+  // Auto-advance slides with slide-specific duration
   useEffect(() => {
     if (!isAutoPlaying) return;
 
+    const currentDuration = slides[currentSlide].durationMs;
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 5000);
+    }, currentDuration);
 
     return () => clearInterval(interval);
-  }, [isAutoPlaying]);
+  }, [isAutoPlaying, currentSlide]);
+
+  // Preload next slide assets
+  useEffect(() => {
+    const nextSlideIndex = (currentSlide + 1) % slides.length;
+    const nextSlide = slides[nextSlideIndex];
+    
+    // Preload Lottie JSON
+    if (nextSlide.lottieAnimation) {
+      fetch(nextSlide.lottieAnimation).catch(() => {});
+    }
+    
+    // Preload fallback image
+    if (nextSlide.staticFallback) {
+      const img = new Image();
+      img.src = nextSlide.staticFallback;
+    }
+  }, [currentSlide]);
 
   const goToSlide = (index: number) => {
     setCurrentSlide(index);
     setIsAutoPlaying(false);
-    // Re-enable auto-play after 10 seconds
-    setTimeout(() => setIsAutoPlaying(true), 10000);
+    // Re-enable auto-play after 2 seconds to avoid jarring mid-sequence changes
+    setTimeout(() => setIsAutoPlaying(true), 2000);
   };
 
   const nextSlide = () => {

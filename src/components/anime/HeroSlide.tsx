@@ -6,6 +6,7 @@ import { SqueegeEffectOverlay } from './SqueegeEffectOverlay';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import { RippleTransition } from './RippleTransition';
 
 interface HeroSlideData {
   id: string;
@@ -42,6 +43,18 @@ export const HeroSlide = ({ data }: HeroSlideProps) => {
     return routes[service as keyof typeof routes];
   };
 
+  // Deterministic positions for consistent visuals
+  const getSparklePositions = () => [
+    { left: '15%', top: '20%' },
+    { left: '75%', top: '15%' },
+    { left: '25%', top: '70%' },
+    { left: '85%', top: '60%' },
+    { left: '45%', top: '25%' },
+    { left: '65%', top: '75%' },
+    { left: '10%', top: '50%' },
+    { left: '90%', top: '40%' }
+  ];
+
   const renderMicroInteraction = () => {
     if (isSeriousMode) return null;
     
@@ -49,10 +62,10 @@ export const HeroSlide = ({ data }: HeroSlideProps) => {
       case 'squeegee':
         return (
           <motion.div
-            className="absolute inset-0 pointer-events-none z-20"
+            className="absolute inset-0 pointer-events-none z-30"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 3 }}
+            transition={{ delay: 1.2 }}
           >
             <SqueegeEffectOverlay 
               trigger={true}
@@ -65,61 +78,59 @@ export const HeroSlide = ({ data }: HeroSlideProps) => {
       case 'pestRetreat':
         return (
           <>
+            {/* Retreat path animation */}
             <motion.div
-              className="absolute bottom-10 right-10 z-30"
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 2.5, duration: 0.5 }}
+              className="absolute bottom-4 right-4 w-24 h-1 bg-gradient-to-l from-red-400/40 to-transparent rounded-full z-25"
+              initial={{ scaleX: 0, opacity: 0 }}
+              animate={{ scaleX: 1, opacity: 1 }}
+              transition={{ delay: 2.0, duration: 1.2, ease: "easeOut" }}
+            />
+            {/* Retreat badge */}
+            <motion.div
+              className="absolute bottom-8 right-8 z-30"
+              initial={{ opacity: 0, x: 30, scale: 0.8 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              transition={{ delay: 3.0, duration: 0.6, ease: "backOut" }}
             >
-              <div className="bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 text-sm font-medium text-pest-foreground shadow-lg">
-                Pests retreating! 🏃‍♂️💨
+              <div className="bg-white/95 backdrop-blur-sm rounded-full px-4 py-2 text-sm font-medium text-red-600 shadow-lg border border-red-100">
+                {t('home.hero.pest.badge')}
               </div>
             </motion.div>
-            {/* Animated "retreat path" */}
-            <motion.div
-              className="absolute bottom-0 right-0 w-32 h-2 bg-gradient-to-l from-pest/30 to-transparent rounded-full"
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ delay: 2, duration: 1 }}
-            />
           </>
         );
       case 'sparkle':
         return (
-          <div className="absolute inset-0 pointer-events-none z-20">
-            {[...Array(8)].map((_, i) => (
+          <div className="absolute inset-0 pointer-events-none z-30">
+            {/* Deterministic sparkles */}
+            {getSparklePositions().map((pos, i) => (
               <motion.div
                 key={i}
-                className="absolute text-3xl"
-                style={{
-                  left: Math.random() * 80 + 10 + '%',
-                  top: Math.random() * 80 + 10 + '%'
-                }}
+                className="absolute text-2xl will-change-transform"
+                style={{ left: pos.left, top: pos.top }}
                 initial={{ scale: 0, rotate: 0, opacity: 0 }}
                 animate={{ 
-                  scale: [0, 1.2, 0],
+                  scale: [0, 1.1, 0],
                   rotate: [0, 180, 360],
                   opacity: [0, 1, 0]
                 }}
                 transition={{
-                  duration: 2.5,
-                  delay: 1.5 + (i * 0.2),
-                  repeat: Infinity,
-                  repeatDelay: 4
+                  duration: 1.8,
+                  delay: 1.5 + (i * 0.15),
+                  ease: "easeOut"
                 }}
               >
                 ✨
               </motion.div>
             ))}
-            {/* "Clean" status badge */}
+            {/* Clean status badge */}
             <motion.div
-              className="absolute top-6 right-6 z-30"
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 4, duration: 0.5 }}
+              className="absolute top-6 right-6 z-35"
+              initial={{ opacity: 0, scale: 0, y: -10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ delay: 4.5, duration: 0.6, ease: "backOut" }}
             >
-              <div className="bg-accent/90 backdrop-blur-sm rounded-full px-4 py-2 text-sm font-medium text-accent-foreground shadow-lg">
-                Sparkling Clean! ✨
+              <div className="bg-green-50/95 backdrop-blur-sm rounded-full px-4 py-2 text-sm font-medium text-green-700 shadow-lg border border-green-200">
+                {t('home.hero.deepClean.badge')}
               </div>
             </motion.div>
           </div>
@@ -137,14 +148,14 @@ export const HeroSlide = ({ data }: HeroSlideProps) => {
           className="space-y-8"
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
+          transition={{ duration: 0.6 }}
         >
           <div className="space-y-4">
             <motion.h1 
               className="text-4xl lg:text-6xl font-bold leading-tight"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
+              transition={{ duration: 0.6, delay: 0.0 }}
             >
               {t(`home.hero.${data.service}.title`)}
             </motion.h1>
@@ -153,17 +164,27 @@ export const HeroSlide = ({ data }: HeroSlideProps) => {
               className="text-xl text-muted-foreground leading-relaxed"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.6 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
             >
               {t(`home.hero.${data.service}.subtitle`)}
             </motion.p>
+
+            {/* Story Caption */}
+            <motion.div
+              className="text-lg text-primary/80 font-medium italic"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
+              {t(`home.hero.${data.service}.storyCaption`)}
+            </motion.div>
 
             {/* Benefits List */}
             <motion.div
               className="flex flex-wrap gap-3"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.8 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
             >
               {(t(`home.hero.${data.service}.benefits`, { returnObjects: true }) as string[]).map((benefit: string, index: number) => (
                 <motion.span
@@ -171,7 +192,7 @@ export const HeroSlide = ({ data }: HeroSlideProps) => {
                   className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium border border-primary/20"
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.3, delay: 0.9 + (index * 0.1) }}
+                  transition={{ duration: 0.3, delay: 0.7 + (index * 0.1) }}
                 >
                   ✓ {benefit}
                 </motion.span>
@@ -184,7 +205,7 @@ export const HeroSlide = ({ data }: HeroSlideProps) => {
             className="flex flex-col sm:flex-row gap-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 1.2 }}
+            transition={{ duration: 0.6, delay: 1.0 }}
           >
             <Button
               size="lg"

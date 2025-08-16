@@ -13,6 +13,7 @@ interface LottieAnimationProps {
   onComplete?: () => void;
   trigger?: 'viewport' | 'hover' | 'click' | 'immediate';
   size?: 'sm' | 'md' | 'lg' | 'xl';
+  maxSize?: number;
 }
 
 export const LottieAnimation = ({
@@ -23,7 +24,8 @@ export const LottieAnimation = ({
   autoplay = true,
   onComplete,
   trigger = 'immediate',
-  size = 'md'
+  size = 'md',
+  maxSize = 600
 }: LottieAnimationProps) => {
   const { isSeriousMode } = useSeriousMode();
   const [animationData, setAnimationData] = useState(null);
@@ -40,6 +42,8 @@ export const LottieAnimation = ({
     lg: 'w-48 h-48',
     xl: 'w-64 h-64'
   };
+
+  const maxSizeStyle = maxSize ? { maxWidth: `${maxSize}px`, maxHeight: `${maxSize}px` } : {};
 
   // Load Lottie animation data with asset normalization and preloading
   useEffect(() => {
@@ -210,6 +214,7 @@ export const LottieAnimation = ({
     <motion.div
       ref={containerRef}
       className={`${sizeClasses[size]} ${className} cursor-pointer`}
+      style={maxSizeStyle}
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
@@ -254,3 +259,19 @@ export const DeepCleaningLottie = (props: Omit<LottieAnimationProps, 'animationP
     fallbackImage="/anime/illustrations/deep-cleaning-scene.png"
   />
 );
+
+// Preload helper for warming up next slide assets
+export const preloadLottieAssets = async (animationPath: string, fallbackImage?: string) => {
+  try {
+    // Preload Lottie JSON
+    await fetch(animationPath);
+    
+    // Preload fallback image
+    if (fallbackImage) {
+      const img = new Image();
+      img.src = fallbackImage;
+    }
+  } catch (error) {
+    console.warn('Preload failed for:', animationPath, error);
+  }
+};

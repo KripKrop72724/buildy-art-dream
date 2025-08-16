@@ -29,7 +29,7 @@ export const SqueegeEffectOverlay = ({
         setIsWiping(false);
         setShowSqueegee(false);
         onComplete?.();
-      }, 3000);
+      }, 2000);
 
       return () => clearTimeout(timer);
     }
@@ -64,7 +64,7 @@ export const SqueegeEffectOverlay = ({
                 rotate: [0, 5, -5, 0]
               }}
               transition={{
-                duration: 2.5,
+                duration: 1.8,
                 ease: "easeInOut"
               }}
             >
@@ -79,7 +79,7 @@ export const SqueegeEffectOverlay = ({
       <AnimatePresence>
         {isWiping && (
           <div className="absolute inset-0 pointer-events-none z-5">
-            {[...Array(12)].map((_, i) => (
+            {[...Array(8)].map((_, i) => (
               <motion.div
                 key={i}
                 className="absolute w-3 h-3 bg-blue-400/60 rounded-full"
@@ -94,8 +94,8 @@ export const SqueegeEffectOverlay = ({
                   rotate: 360
                 }}
                 transition={{
-                  duration: 1.5,
-                  delay: i * 0.1,
+                  duration: 0.9,
+                  delay: i * 0.08,
                   ease: "easeOut"
                 }}
               />
@@ -111,7 +111,7 @@ export const SqueegeEffectOverlay = ({
             className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-200/30 to-transparent pointer-events-none z-8"
             initial={{ x: '-100%' }}
             animate={{ x: '100%' }}
-            transition={{ duration: 2.5, ease: "easeInOut" }}
+            transition={{ duration: 1.8, ease: "easeInOut" }}
           />
         )}
       </AnimatePresence>

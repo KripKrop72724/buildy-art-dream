@@ -3,11 +3,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 
 interface RippleTransitionProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   trigger?: boolean;
   className?: string;
   color?: string;
   size?: 'sm' | 'md' | 'lg';
+  compact?: boolean;
   onComplete?: () => void;
 }
 
@@ -17,6 +18,7 @@ export const RippleTransition = ({
   className = '',
   color = 'rgb(59, 130, 246)', // pool blue
   size = 'md',
+  compact = false,
   onComplete
 }: RippleTransitionProps) => {
   const { isSeriousMode } = useSeriousMode();
@@ -32,24 +34,26 @@ export const RippleTransition = ({
   useEffect(() => {
     if (trigger && !isSeriousMode) {
       // Create multiple ripples at random positions
-      const newRipples = Array.from({ length: 3 }, (_, i) => ({
+      const rippleCount = compact ? 2 : 3;
+      const newRipples = Array.from({ length: rippleCount }, (_, i) => ({
         id: rippleId + i,
         x: Math.random() * 100,
         y: Math.random() * 100
       }));
       
       setRipples(prev => [...prev, ...newRipples]);
-      setRippleId(prev => prev + 3);
+      setRippleId(prev => prev + rippleCount);
 
       // Clean up ripples after animation
+      const duration = compact ? 700 : 1500;
       const timer = setTimeout(() => {
         setRipples(prev => prev.filter(r => !newRipples.some(nr => nr.id === r.id)));
         onComplete?.();
-      }, 1500);
+      }, duration);
 
       return () => clearTimeout(timer);
     }
-  }, [trigger, isSeriousMode, rippleId, onComplete]);
+  }, [trigger, isSeriousMode, rippleId, onComplete, compact]);
 
   if (isSeriousMode) {
     return <div className={className}>{children}</div>;
@@ -88,7 +92,7 @@ export const RippleTransition = ({
                 scale: 1.2
               }}
               transition={{
-                duration: 1.5,
+                duration: compact ? 0.7 : 1.5,
                 ease: "easeOut"
               }}
             />
