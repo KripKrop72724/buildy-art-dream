@@ -1,42 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&family=Fredoka:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* BuildCare Anime Art Bible Design System */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Primary Brand Colors - Soft anime pastels */
+    --background: 220 100% 98%;
+    --foreground: 220 15% 15%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    /* Card & Surface Colors */
+    --card: 220 50% 97%;
+    --card-foreground: 220 15% 20%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 220 100% 99%;
+    --popover-foreground: 220 15% 15%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Chibi Mascot Primary - Soft coral pink */
+    --primary: 345 75% 68%;
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 345 75% 58%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* UAE Gold Accent */
+    --secondary: 45 85% 75%;
+    --secondary-foreground: 30 45% 25%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Soft Mint - Cleaning theme */
+    --accent: 155 60% 82%;
+    --accent-foreground: 155 40% 20%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Pool Blue - Water theme */
+    --pool: 195 85% 75%;
+    --pool-foreground: 195 60% 15%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Pest Orange - Extermination theme */
+    --pest: 25 85% 72%;
+    --pest-foreground: 25 45% 15%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Muted tones */
+    --muted: 220 30% 94%;
+    --muted-foreground: 220 15% 45%;
 
-    --radius: 0.5rem;
+    /* Danger (for sad roach) */
+    --destructive: 0 75% 65%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* UI Elements */
+    --border: 220 30% 88%;
+    --input: 220 30% 92%;
+    --ring: 345 75% 68%;
+
+    /* Anime Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(345 75% 68%), hsl(325 70% 72%));
+    --gradient-secondary: linear-gradient(135deg, hsl(45 85% 75%), hsl(55 80% 78%));
+    --gradient-hero: linear-gradient(135deg, hsl(220 100% 98%), hsl(200 80% 96%));
+    --gradient-card: linear-gradient(145deg, hsl(220 50% 97%), hsl(200 40% 95%));
+
+    /* Shadows - Soft anime style */
+    --shadow-soft: 0 4px 20px hsl(220 15% 15% / 0.08);
+    --shadow-mascot: 0 8px 30px hsl(345 75% 68% / 0.25);
+    --shadow-float: 0 12px 40px hsl(220 15% 15% / 0.12);
+
+    /* Border radius for chibi style */
+    --radius: 1rem;
+    --radius-mascot: 1.5rem;
 
     --sidebar-background: 0 0% 98%;
 
@@ -100,6 +130,48 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-body;
+    background: var(--gradient-hero);
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-semibold;
+  }
+}
+
+@layer components {
+  /* Anime Mascot Card */
+  .mascot-card {
+    @apply relative rounded-[var(--radius-mascot)] p-6;
+    background: var(--gradient-card);
+    box-shadow: var(--shadow-mascot);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .mascot-card:hover {
+    @apply -translate-y-2;
+    box-shadow: var(--shadow-float);
+  }
+  
+  /* Chibi Animation */
+  .chibi-bounce {
+    animation: chibi-bounce 2s ease-in-out infinite;
+  }
+  
+  @keyframes chibi-bounce {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(1deg); }
+  }
+  
+  /* Kawaii Button */
+  .btn-kawaii {
+    @apply relative overflow-hidden rounded-full px-8 py-4 font-display font-semibold;
+    @apply transition-all duration-300 transform hover:scale-105;
+    background: var(--gradient-primary);
+    box-shadow: var(--shadow-soft);
+  }
+  
+  .btn-kawaii:hover {
+    box-shadow: var(--shadow-mascot);
   }
 }

@@ -18,6 +18,10 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				'body': ['Nunito', 'sans-serif'],
+				'display': ['Fredoka', 'sans-serif'],
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -26,7 +30,8 @@ export default {
 				foreground: 'hsl(var(--foreground))',
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
+					foreground: 'hsl(var(--primary-foreground))',
+					hover: 'hsl(var(--primary-hover))'
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
@@ -52,6 +57,14 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				pool: {
+					DEFAULT: 'hsl(var(--pool))',
+					foreground: 'hsl(var(--pool-foreground))'
+				},
+				pest: {
+					DEFAULT: 'hsl(var(--pest))',
+					foreground: 'hsl(var(--pest-foreground))'
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
@@ -66,7 +79,8 @@ export default {
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
-				sm: 'calc(var(--radius) - 4px)'
+				sm: 'calc(var(--radius) - 4px)',
+				mascot: 'var(--radius-mascot)'
 			},
 			keyframes: {
 				'accordion-down': {
@@ -84,11 +98,49 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'chibi-bounce': {
+					'0%, 100%': { 
+						transform: 'translateY(0px) rotate(0deg)' 
+					},
+					'50%': { 
+						transform: 'translateY(-10px) rotate(1deg)' 
+					}
+				},
+				'float': {
+					'0%, 100%': { 
+						transform: 'translateY(0px)' 
+					},
+					'50%': { 
+						transform: 'translateY(-8px)' 
+					}
+				},
+				'wiggle': {
+					'0%, 100%': { 
+						transform: 'rotate(-2deg)' 
+					},
+					'50%': { 
+						transform: 'rotate(2deg)' 
+					}
+				},
+				'kawaii-pulse': {
+					'0%, 100%': { 
+						transform: 'scale(1)',
+						opacity: '1'
+					},
+					'50%': { 
+						transform: 'scale(1.05)',
+						opacity: '0.8'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'chibi-bounce': 'chibi-bounce 2s ease-in-out infinite',
+				'float': 'float 3s ease-in-out infinite',
+				'wiggle': 'wiggle 1.5s ease-in-out infinite',
+				'kawaii-pulse': 'kawaii-pulse 2s ease-in-out infinite'
 			}
 		}
 	},
