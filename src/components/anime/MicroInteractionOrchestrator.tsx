@@ -7,6 +7,7 @@ interface MicroInteractionProps {
   serviceType: string;
   isActive: boolean;
   onComplete?: () => void;
+  manualTriggerKey?: number;
 }
 
 interface InteractionBeat {
@@ -21,7 +22,8 @@ interface InteractionBeat {
 export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
   serviceType,
   isActive,
-  onComplete
+  onComplete,
+  manualTriggerKey
 }) => {
   const { isSeriousMode } = useSeriousMode();
   const { triggerBeat } = useStory();
@@ -100,11 +102,25 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
     };
   }, [isActive, serviceType, isSeriousMode, triggerBeat, onComplete]);
 
+  // Manual one-off trigger for extra interactivity
+  useEffect(() => {
+    if (!manualTriggerKey || isSeriousMode) return;
+    const now = Date.now();
+    const extra: InteractionBeat = serviceType === 'pest'
+      ? { id: `manual-pest-${now}`, delay: 0, duration: 1500, type: 'pest-retreat', message: 'Pests retreat!', position: { x: 60, y: 30 } }
+      : { id: `manual-sparkle-${now}`, delay: 0, duration: 1300, type: 'sparkle-burst', message: 'Extra sparkle!', position: { x: 55, y: 45 } };
+    console.debug('[Orchestrator] Manual trigger', extra.id, extra);
+    setActiveInteractions(prev => [...prev, extra]);
+    triggerBeat({ id: extra.id, timestamp: now, type: 'interaction', content: extra.message, position: extra.position });
+    const rm = setTimeout(() => setActiveInteractions(prev => prev.filter(i => i.id !== extra.id)), extra.duration);
+    return () => clearTimeout(rm);
+  }, [manualTriggerKey, isSeriousMode, serviceType, triggerBeat]);
+
   const renderInteraction = (interaction: InteractionBeat) => {
-    const baseClasses = "absolute pointer-events-none z-40";
+    const baseClasses = "absolute pointer-events-none z-50";;
     const style = {
-      left: `${interaction.position?.x || 50}%`,
-      top: `${interaction.position?.y || 50}%`,
+      left: `${interaction.position?.x ?? 50}%`,
+      top: `${interaction.position?.y ?? 50}%`,
       transform: 'translate(-50%, -50%)'
     };
 
@@ -132,7 +148,7 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
         return (
           <motion.div
             key={interaction.id}
-            className={`${baseClasses} text-4xl`}
+            className={`${baseClasses} text-5xl`}}
             style={style}
             initial={{ scale: 0.8, rotate: 0, x: 0, y: 0 }}
             animate={{
@@ -197,7 +213,7 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
   if (isSeriousMode) return null;
 
     return (
-      <div className="absolute inset-0 overflow-hidden pointer-events-none z-40">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-50">
         <AnimatePresence>
           {activeInteractions.map(renderInteraction)}
         </AnimatePresence>

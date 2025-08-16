@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface StoryBeat {
@@ -61,6 +61,39 @@ export const StoryDirector: React.FC<StoryDirectorProps> = ({
 
     return () => clearInterval(interval);
   }, [isStoryActive, startTime, duration, onStoryComplete]);
+
+  // Auto narrative beats tied to progress
+  useEffect(() => {
+    if (!isStoryActive) return;
+
+    let phase: 'intro' | 'action' | 'payoff' | null = null;
+    if (storyProgress < 0.2) phase = 'intro';
+    else if (storyProgress < 0.85) phase = 'action';
+    else phase = 'payoff';
+
+    if (phase && (currentBeat?.id?.startsWith('auto-') ? !currentBeat : true)) {
+      // Avoid spamming same phase twice in a row
+      const id = `auto-${phase}-${Date.now()}`;
+      const contentMap = {
+        intro: 'Assessing surfaces…',
+        action: 'Deep cleaning in progress…',
+        payoff: 'Spotless perfection!'
+      } as const;
+
+      setCurrentBeat({
+        id,
+        timestamp: Date.now(),
+        type: phase === 'intro' ? 'intro' : phase === 'action' ? 'interaction' : 'payoff',
+        content: contentMap[phase],
+        position: { x: 50, y: 18 }
+      });
+
+      const clear = setTimeout(() => {
+        setCurrentBeat(cb => (cb && cb.id === id ? null : cb));
+      }, 1600);
+      return () => clearTimeout(clear);
+    }
+  }, [storyProgress, isStoryActive]);
 
   const triggerBeat = (beat: StoryBeat) => {
     setCurrentBeat(beat);

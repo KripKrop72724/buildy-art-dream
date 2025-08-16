@@ -45,6 +45,7 @@ const resources = {
           pool: {
             title: 'Crystal Clear Pools, Year-Round Bliss',
             subtitle: 'Professional pool maintenance that keeps your oasis sparkling clean and swim-ready',
+            description: 'Comprehensive cleaning, chemical balancing, and expert care for a safe, sparkling pool.',
             storyCaption: 'Watch our expert team transform your pool into a pristine paradise',
             benefits: ['Weekly maintenance', 'Chemical balancing', 'Emergency repairs', 'Equipment servicing'],
             primaryCta: 'Book Free Pool Inspection',
@@ -56,6 +57,7 @@ const resources = {
           pest: {
             title: 'Gentle Pest Solutions That Work',
             subtitle: 'Family-safe treatments that effectively protect your home from unwanted visitors',
+            description: 'Family-safe, pet-friendly treatments that make pests retreat fast and stay away.',
             storyCaption: 'See how we make pests retreat while keeping your family safe',
             benefits: ['Family-safe treatments', 'Pet-friendly', 'Follow-up visits', 'Warranty included'],
             primaryCta: 'Book Free Pest Inspection',
@@ -67,6 +69,7 @@ const resources = {
           deepClean: {
             title: 'Deep Clean Magic That Sparkles',
             subtitle: 'Eco-friendly deep cleaning that transforms every corner of your space',
+            description: 'Floor-to-ceiling deep cleaning with eco-friendly products and meticulous detail.',
             storyCaption: 'Experience the magical transformation of deep cleaning excellence',
             benefits: ['Eco-friendly products', 'Post-clean inspection', 'Satisfaction guarantee', 'Room-by-room care'],
             primaryCta: 'Book Free Cleaning Quote',
@@ -147,6 +150,7 @@ const resources = {
           pool: {
             title: 'مسابح صافية، سعادة على مدار السنة',
             subtitle: 'صيانة مسابح مهنية تحافظ على واحة منزلك نظيفة وجاهزة للسباحة',
+            description: 'تنظيف شامل وتوازن للمواد الكيميائية ورعاية خبيرة لمسبح آمن ولامع.',
             storyCaption: 'شاهد فريقنا الخبير يحول مسبحك إلى جنة نظيفة',
             benefits: ['صيانة أسبوعية', 'توازن المواد الكيميائية', 'إصلاحات طارئة', 'خدمة المعدات'],
             primaryCta: 'احجز فحص مسبح مجاني',
@@ -158,6 +162,7 @@ const resources = {
           pest: {
             title: 'حلول لطيفة ضد الآفات تعمل بفعالية',
             subtitle: 'علاجات آمنة للعائلة تحمي منزلك بفعالية من الزوار غير المرغوب فيهم',
+            description: 'علاجات آمنة للعائلة وصديقة للحيوانات الأليفة تُبعد الآفات بسرعة وتمنع عودتها.',
             storyCaption: 'شاهد كيف نجعل الآفات تتراجع مع الحفاظ على سلامة عائلتك',
             benefits: ['علاجات آمنة للعائلة', 'صديقة للحيوانات الأليفة', 'زيارات متابعة', 'ضمان مشمول'],
             primaryCta: 'احجز فحص آفات مجاني',
@@ -169,6 +174,7 @@ const resources = {
           deepClean: {
             title: 'سحر التنظيف العميق الذي يلمع',
             subtitle: 'تنظيف عميق صديق للبيئة يحول كل زاوية في مساحتك',
+            description: 'تنظيف عميق من الأرض إلى السقف بمنتجات صديقة للبيئة واهتمام دقيق بالتفاصيل.',
             storyCaption: 'اختبر التحول السحري لتميز التنظيف العميق',
             benefits: ['منتجات صديقة للبيئة', 'فحص ما بعد التنظيف', 'ضمان الرضا', 'العناية غرفة بغرفة'],
             primaryCta: 'احجز عرض تنظيف مجاني',

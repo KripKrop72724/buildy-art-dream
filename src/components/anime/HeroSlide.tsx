@@ -26,6 +26,7 @@ export const HeroSlide: React.FC<HeroSlideProps> = ({ data }) => {
   const { t } = useTranslation();
   const [storyActive, setStoryActive] = useState(false);
   const [interactionPhase, setInteractionPhase] = useState(0);
+  const [manualTriggerKey, setManualTriggerKey] = useState(0);
 
   useEffect(() => {
     // Start story sequence when slide mounts
@@ -308,7 +309,7 @@ export const HeroSlide: React.FC<HeroSlideProps> = ({ data }) => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            <div className="relative w-full max-w-md aspect-square">
+            <div className="relative w-full max-w-md aspect-square" onClick={() => setManualTriggerKey((k) => k + 1)}>
               <LottieAnimation
                 animationPath={data.animationPath}
                 fallbackImage={data.fallbackImage}
@@ -323,6 +324,7 @@ export const HeroSlide: React.FC<HeroSlideProps> = ({ data }) => {
                 serviceType={data.service}
                 isActive={storyActive}
                 onComplete={() => setInteractionPhase(prev => prev + 1)}
+                manualTriggerKey={manualTriggerKey}
               />
               
               {/* Traditional micro-interaction overlays for fallback */}

@@ -78,7 +78,7 @@ export const SqueegeEffectOverlay = ({
       {/* Water Droplets */}
       <AnimatePresence>
         {isWiping && (
-          <div className="absolute inset-0 pointer-events-none z-5">
+          <div className="absolute inset-0 pointer-events-none z-10">
             {[...Array(8)].map((_, i) => (
               <motion.div
                 key={i}
@@ -108,7 +108,7 @@ export const SqueegeEffectOverlay = ({
       <AnimatePresence>
         {isWiping && (
           <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-200/30 to-transparent pointer-events-none z-8"
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-200/30 to-transparent pointer-events-none z-20"
             initial={{ x: '-100%' }}
             animate={{ x: '100%' }}
             transition={{ duration: 1.8, ease: "easeInOut" }}
@@ -119,7 +119,7 @@ export const SqueegeEffectOverlay = ({
       {/* Clean Sparkle Effect */}
       <AnimatePresence>
         {isWiping && (
-          <div className="absolute inset-0 pointer-events-none z-9">
+          <div className="absolute inset-0 pointer-events-none z-30">
             {[...Array(8)].map((_, i) => (
               <motion.div
                 key={`sparkle-${i}`}

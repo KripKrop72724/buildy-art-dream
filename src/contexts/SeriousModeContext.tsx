@@ -13,31 +13,21 @@ interface SeriousModeProviderProps {
 }
 
 export const SeriousModeProvider = ({ children }: SeriousModeProviderProps) => {
-  const [isSeriousMode, setIsSeriousMode] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('buildcare-serious-mode');
-      return saved ? JSON.parse(saved) : false;
-    }
-    return false;
-  });
+  const [isSeriousMode, setIsSeriousMode] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem('buildcare-serious-mode', JSON.stringify(isSeriousMode));
-    
-    // Add class to body for CSS targeting
-    if (isSeriousMode) {
-      document.body.classList.add('serious-mode');
-    } else {
-      document.body.classList.remove('serious-mode');
-    }
+    try { localStorage.setItem('buildcare-serious-mode', 'false'); } catch {}
+    document.body.classList.remove('serious-mode');
   }, [isSeriousMode]);
 
   const toggleSeriousMode = () => {
-    setIsSeriousMode(prev => !prev);
+    // Temporarily disabled
+    console.debug('Serious mode is temporarily disabled');
   };
 
   const setSeriousMode = (serious: boolean) => {
-    setIsSeriousMode(serious);
+    // Temporarily disabled
+    console.debug('Serious mode set request ignored:', serious);
   };
 
   return (

@@ -34,6 +34,7 @@ export const LottieAnimation = ({
   const [isInView, setIsInView] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const lottieRef = useRef<any>(null);
+  const loadedRef = useRef(false);
 
   // Size classes
   const sizeClasses = {
@@ -50,6 +51,7 @@ export const LottieAnimation = ({
     if (isSeriousMode) return;
 
     let cancelled = false;
+    loadedRef.current = false;
     setUseFallback(false);
 
     const baseFromPath = () => {
@@ -115,7 +117,7 @@ export const LottieAnimation = ({
     };
 
     const watchdog = window.setTimeout(() => {
-      if (!cancelled && !animationData) {
+      if (!cancelled && !loadedRef.current) {
         console.warn('Lottie timed out, using fallback:', animationPath);
         setUseFallback(true);
       }
