@@ -6,7 +6,7 @@ import { SqueegeEffectOverlay } from './SqueegeEffectOverlay';
 import { RippleTransition } from './RippleTransition';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useTranslation } from 'react-i18next';
-import { StoryDirector } from './StoryDirector';
+import { StoryDirector, useStory } from './StoryDirector';
 import { MicroInteractionOrchestrator } from './MicroInteractionOrchestrator';
 
 export interface HeroSlideData {
@@ -24,6 +24,7 @@ interface HeroSlideProps {
 export const HeroSlide: React.FC<HeroSlideProps> = ({ data }) => {
   const { isSeriousMode } = useSeriousMode();
   const { t } = useTranslation();
+  const { setStoryActive: setStoryDirectorActive } = useStory();
   const [storyActive, setStoryActive] = useState(false);
   const [interactionPhase, setInteractionPhase] = useState(0);
   const [manualTriggerKey, setManualTriggerKey] = useState(0);
@@ -40,6 +41,11 @@ export const HeroSlide: React.FC<HeroSlideProps> = ({ data }) => {
       setInteractionPhase(0);
     };
   }, [data.service]);
+
+  // Wire slide's storyActive to StoryDirector context
+  useEffect(() => {
+    setStoryDirectorActive(storyActive);
+  }, [storyActive, setStoryDirectorActive]);
 
   const getWhatsAppLink = (service: string) => {
     const messages = {
@@ -79,7 +85,7 @@ export const HeroSlide: React.FC<HeroSlideProps> = ({ data }) => {
       case 'squeegee':
         return (
           <motion.div
-            className="absolute inset-0 pointer-events-none z-25"
+            className="absolute inset-0 pointer-events-none z-30"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 3.0 }}
@@ -105,7 +111,7 @@ export const HeroSlide: React.FC<HeroSlideProps> = ({ data }) => {
         );
       case 'pest-retreat':
         return (
-          <div className="absolute inset-0 pointer-events-none z-25">
+          <div className="absolute inset-0 pointer-events-none z-30">
             {/* Pest retreat path */}
             <motion.div
               className="absolute bottom-4 right-4 w-24 h-1 bg-gradient-to-l from-red-400/40 to-transparent rounded-full"
@@ -148,7 +154,7 @@ export const HeroSlide: React.FC<HeroSlideProps> = ({ data }) => {
         );
       case 'sparkle-burst':
         return (
-          <div className="absolute inset-0 pointer-events-none z-25">
+          <div className="absolute inset-0 pointer-events-none z-30">
             {/* Deterministic sparkles */}
             {getSparklePositions().map((pos, i) => (
               <motion.div

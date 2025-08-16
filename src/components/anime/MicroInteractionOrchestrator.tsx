@@ -148,7 +148,7 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
         return (
           <motion.div
             key={interaction.id}
-            className={`${baseClasses} text-5xl`}
+            className={`${baseClasses} text-6xl drop-shadow-lg`}
             style={style}
             initial={{ scale: 0.8, rotate: 0, x: 0, y: 0 }}
             animate={{
@@ -194,7 +194,7 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
         return (
           <motion.div
             key={interaction.id}
-            className={`${baseClasses} text-6xl`}
+            className={`${baseClasses} text-7xl drop-shadow-lg`}
             style={style}
             initial={{ scale: 0, y: 50 }}
             animate={{ scale: [0, 1.2, 1], y: 0 }}

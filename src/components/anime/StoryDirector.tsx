@@ -54,6 +54,7 @@ export const StoryDirector: React.FC<StoryDirectorProps> = ({
 
         if (progress >= 1) {
           setIsStoryActive(false);
+          console.debug('[StoryDirector] Story completed');
           onStoryComplete?.();
         }
       }
@@ -99,6 +100,10 @@ export const StoryDirector: React.FC<StoryDirectorProps> = ({
     setCurrentBeat(beat);
     if (!startTime) {
       setStartTime(Date.now());
+    }
+    if (!isStoryActive) {
+      setIsStoryActive(true);
+      console.debug('[StoryDirector] Story started', { beatId: beat.id });
     }
   };
 
