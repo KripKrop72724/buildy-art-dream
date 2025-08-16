@@ -75,7 +75,7 @@ const resources = {
             benefit2: 'Eco-friendly cleaning products',
             benefit3: 'Detailed cleaning checklist'
           },
-          cta: {
+          ctaButtons: {
             whatsapp: 'Get Quote on WhatsApp',
             learnMore: 'Learn More'
           }
@@ -177,7 +177,7 @@ const resources = {
             benefit2: 'منتجات تنظيف صديقة للبيئة',
             benefit3: 'قائمة تنظيف مفصلة'
           },
-          cta: {
+          ctaButtons: {
             whatsapp: 'احصل على عرض أسعار على واتساب',
             learnMore: 'اعرف أكثر'
           }

@@ -288,7 +288,7 @@ export const HeroSlide: React.FC<HeroSlideProps> = ({ data }) => {
                 className="text-lg px-8"
                 onClick={() => window.open(getWhatsAppLink(data.service), '_blank')}
               >
-                {t('home.hero.cta.whatsapp')}
+                {t('home.hero.ctaButtons.whatsapp')}
               </Button>
               <Button 
                 variant="outline" 
@@ -296,7 +296,7 @@ export const HeroSlide: React.FC<HeroSlideProps> = ({ data }) => {
                 className="text-lg px-8"
                 onClick={() => window.location.href = getServiceRoute(data.service)}
               >
-                {t('home.hero.cta.learnMore')}
+                {t('home.hero.ctaButtons.learnMore')}
               </Button>
             </motion.div>
           </motion.div>
