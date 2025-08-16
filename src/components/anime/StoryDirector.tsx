@@ -97,10 +97,10 @@ export const StoryDirector: React.FC<StoryDirectorProps> = ({
               initial={{ opacity: 0, scale: 0.8, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.8, y: -20 }}
-              className="absolute z-30 pointer-events-none"
+              className="absolute z-50 pointer-events-none"
               style={{
-                left: currentBeat.position?.x || '50%',
-                top: currentBeat.position?.y || '50%',
+                left: typeof currentBeat.position?.x === 'number' ? `${currentBeat.position.x}%` : (currentBeat.position?.x || '50%'),
+                top: typeof currentBeat.position?.y === 'number' ? `${currentBeat.position.y}%` : (currentBeat.position?.y || '50%'),
                 transform: 'translate(-50%, -50%)'
               }}
             >

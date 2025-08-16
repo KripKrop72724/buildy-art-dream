@@ -65,6 +65,7 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
 
     interactions.forEach(interaction => {
       const timeout = setTimeout(() => {
+        console.debug('[Orchestrator] Triggering interaction', interaction.id, interaction);
         setActiveInteractions(prev => [...prev, interaction]);
         
         triggerBeat({
@@ -87,6 +88,7 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
     // Trigger completion
     const totalDuration = Math.max(...interactions.map(i => i.delay + i.duration));
     const completeTimeout = setTimeout(() => {
+      console.debug('[Orchestrator] Sequence complete for', serviceType);
       onComplete?.();
     }, totalDuration + 500);
 
@@ -99,7 +101,7 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
   }, [isActive, serviceType, isSeriousMode, triggerBeat, onComplete]);
 
   const renderInteraction = (interaction: InteractionBeat) => {
-    const baseClasses = "absolute pointer-events-none z-25";
+    const baseClasses = "absolute pointer-events-none z-40";
     const style = {
       left: `${interaction.position?.x || 50}%`,
       top: `${interaction.position?.y || 50}%`,
@@ -132,10 +134,15 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
             key={interaction.id}
             className={`${baseClasses} text-4xl`}
             style={style}
-            initial={{ scale: 0, rotate: 0 }}
-            animate={{ scale: 1, rotate: 360 }}
-            exit={{ scale: 0, x: -100 }}
-            transition={{ duration: 0.8, ease: "backOut" }}
+            initial={{ scale: 0.8, rotate: 0, x: 0, y: 0 }}
+            animate={{
+              scale: [0.8, 1, 0.9, 1],
+              rotate: [0, 15, -10, 0],
+              x: [0, -120],
+              y: [0, -10],
+            }}
+            exit={{ opacity: 0, x: -180 }}
+            transition={{ duration: Math.max(interaction.duration / 1000, 0.8), ease: "easeInOut" }}
           >
             🐛💨
           </motion.div>
@@ -189,11 +196,11 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
 
   if (isSeriousMode) return null;
 
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      <AnimatePresence>
-        {activeInteractions.map(renderInteraction)}
-      </AnimatePresence>
-    </div>
-  );
+    return (
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-40">
+        <AnimatePresence>
+          {activeInteractions.map(renderInteraction)}
+        </AnimatePresence>
+      </div>
+    );
 };

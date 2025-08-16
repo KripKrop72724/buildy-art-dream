@@ -104,6 +104,7 @@ export const LottieAnimation = ({
           setAnimationData(null);
           return;
         }
+        console.debug('Lottie loaded:', animationPath);
         setAnimationData(normalized);
       } catch (error) {
         if (cancelled) return;
@@ -118,7 +119,7 @@ export const LottieAnimation = ({
         console.warn('Lottie timed out, using fallback:', animationPath);
         setUseFallback(true);
       }
-    }, 1800);
+    }, 3500);
 
     load();
 

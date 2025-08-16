@@ -326,7 +326,7 @@ export const HeroSlide: React.FC<HeroSlideProps> = ({ data }) => {
               />
               
               {/* Traditional micro-interaction overlays for fallback */}
-              {renderMicroInteraction()}
+              {isSeriousMode && renderMicroInteraction()}
               
               {/* Decorative elements */}
               {!isSeriousMode && (
