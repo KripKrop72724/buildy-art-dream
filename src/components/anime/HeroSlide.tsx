@@ -21,10 +21,16 @@ interface HeroSlideProps {
   data: HeroSlideData;
 }
 
+// Syncs slide-local storyActive to StoryDirector context (must be inside provider)
+const StorySync: React.FC<{ active: boolean }> = ({ active }) => {
+  const { setStoryActive } = useStory();
+  useEffect(() => setStoryActive(active), [active, setStoryActive]);
+  return null;
+};
+
 export const HeroSlide: React.FC<HeroSlideProps> = ({ data }) => {
   const { isSeriousMode } = useSeriousMode();
   const { t } = useTranslation();
-  const { setStoryActive: setStoryDirectorActive } = useStory();
   const [storyActive, setStoryActive] = useState(false);
   const [interactionPhase, setInteractionPhase] = useState(0);
   const [manualTriggerKey, setManualTriggerKey] = useState(0);
@@ -42,10 +48,6 @@ export const HeroSlide: React.FC<HeroSlideProps> = ({ data }) => {
     };
   }, [data.service]);
 
-  // Wire slide's storyActive to StoryDirector context
-  useEffect(() => {
-    setStoryDirectorActive(storyActive);
-  }, [storyActive, setStoryDirectorActive]);
 
   const getWhatsAppLink = (service: string) => {
     const messages = {
@@ -217,6 +219,7 @@ export const HeroSlide: React.FC<HeroSlideProps> = ({ data }) => {
 
   return (
     <StoryDirector duration={data.durationMs} onStoryComplete={() => setStoryActive(false)}>
+      <StorySync active={storyActive} />
       <div className="min-h-screen flex items-center justify-center px-4 py-8 relative overflow-hidden">
         {/* Background gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-background via-background/95 to-primary/5" />
