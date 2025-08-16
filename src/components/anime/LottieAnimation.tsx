@@ -107,6 +107,8 @@ export const LottieAnimation = ({
           return;
         }
         console.debug('Lottie loaded:', animationPath);
+        loadedRef.current = true;
+        setUseFallback(false);
         setAnimationData(normalized);
       } catch (error) {
         if (cancelled) return;

@@ -117,7 +117,7 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
   }, [manualTriggerKey, isSeriousMode, serviceType, triggerBeat]);
 
   const renderInteraction = (interaction: InteractionBeat) => {
-    const baseClasses = "absolute pointer-events-none z-50";;
+    const baseClasses = "absolute pointer-events-none z-50";
     const style = {
       left: `${interaction.position?.x ?? 50}%`,
       top: `${interaction.position?.y ?? 50}%`,
@@ -148,7 +148,7 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
         return (
           <motion.div
             key={interaction.id}
-            className={`${baseClasses} text-5xl`}}
+            className={`${baseClasses} text-5xl`}
             style={style}
             initial={{ scale: 0.8, rotate: 0, x: 0, y: 0 }}
             animate={{
@@ -212,11 +212,11 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
 
   if (isSeriousMode) return null;
 
-    return (
-      <div className="absolute inset-0 overflow-hidden pointer-events-none z-50">
-        <AnimatePresence>
-          {activeInteractions.map(renderInteraction)}
-        </AnimatePresence>
-      </div>
-    );
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none z-50">
+      <AnimatePresence>
+        {activeInteractions.map(renderInteraction)}
+      </AnimatePresence>
+    </div>
+  );
 };
