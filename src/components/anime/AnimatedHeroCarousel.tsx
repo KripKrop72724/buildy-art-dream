@@ -71,13 +71,13 @@ export const AnimatedHeroCarousel = () => {
   };
 
   return (
-    <section className="relative min-h-[80vh] overflow-hidden bg-gradient-to-br from-background via-primary/5 to-secondary/10">
+    <section className="relative overflow-hidden bg-gradient-to-br from-background via-primary/5 to-secondary/10">
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,hsl(var(--primary)/.1)_0%,transparent_50%)]" />
 
       {/* Carousel Container */}
       <div 
-        className="relative h-full"
+        className="relative min-h-[80vh]"
         onMouseEnter={() => setIsAutoPlaying(false)}
         onMouseLeave={() => setIsAutoPlaying(true)}
       >

@@ -148,7 +148,7 @@ export const LottieAnimation = ({
 export const PoolMaintenanceLottie = (props: Omit<LottieAnimationProps, 'animationPath' | 'fallbackImage'>) => (
   <LottieAnimation
     {...props}
-    animationPath="/anime/lottie/pool-maintenance.json"
+    animationPath="/anime/lottie/buildy-idle-wave.json"
     fallbackImage="/anime/illustrations/pool-service-scene.png"
   />
 );
@@ -156,7 +156,7 @@ export const PoolMaintenanceLottie = (props: Omit<LottieAnimationProps, 'animati
 export const PestControlLottie = (props: Omit<LottieAnimationProps, 'animationPath' | 'fallbackImage'>) => (
   <LottieAnimation
     {...props}
-    animationPath="/anime/lottie/pest-control.json"
+    animationPath="/anime/lottie/pest-retreat.json"
     fallbackImage="/anime/illustrations/pest-control-scene.png"
   />
 );
@@ -164,7 +164,7 @@ export const PestControlLottie = (props: Omit<LottieAnimationProps, 'animationPa
 export const DeepCleaningLottie = (props: Omit<LottieAnimationProps, 'animationPath' | 'fallbackImage'>) => (
   <LottieAnimation
     {...props}
-    animationPath="/anime/lottie/deep-cleaning.json"
+    animationPath="/anime/lottie/droplet-hop.json"
     fallbackImage="/anime/illustrations/deep-cleaning-scene.png"
   />
 );

@@ -196,7 +196,7 @@ export const HeroSlide = ({ data }: HeroSlideProps) => {
           <LottieAnimation
             animationPath={data.lottieAnimation}
             fallbackImage={data.staticFallback}
-            className="w-full h-full max-w-md"
+            className="w-full max-w-lg"
             trigger="viewport"
             size="xl"
             loop={true}
