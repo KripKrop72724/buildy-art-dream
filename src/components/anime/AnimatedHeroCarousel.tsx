@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '../ui/button';
 import { HeroSlide, type HeroSlideData } from './HeroSlide';
-import { useSeriousMode } from '../../contexts/SeriousModeContext';
+import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { NarrativeBridge } from './NarrativeBridge';
 import { preloadLottieAssets } from './LottieAnimation';
 

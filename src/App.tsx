@@ -4,7 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Layout } from "./components/layout/Layout";
-import { SeriousModeProvider } from "./contexts/SeriousModeContext";
+import { SeriousModeProvider } from "@/contexts/SeriousModeContext";
 import Home from "./pages/Home";
 import Pool from "./pages/services/Pool";
 import Pest from "./pages/services/Pest";

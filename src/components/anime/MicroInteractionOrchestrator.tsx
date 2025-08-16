@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useSeriousMode } from '../../contexts/SeriousModeContext';
+import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useStory } from './StoryDirector';
 
 interface MicroInteractionProps {

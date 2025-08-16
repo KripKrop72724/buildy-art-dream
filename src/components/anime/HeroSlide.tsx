@@ -4,7 +4,7 @@ import { Button } from '../ui/button';
 import { LottieAnimation } from './LottieAnimation';
 import { SqueegeEffectOverlay } from './SqueegeEffectOverlay';
 import { RippleTransition } from './RippleTransition';
-import { useSeriousMode } from '../../contexts/SeriousModeContext';
+import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useTranslation } from 'react-i18next';
 import { StoryDirector } from './StoryDirector';
 import { MicroInteractionOrchestrator } from './MicroInteractionOrchestrator';
