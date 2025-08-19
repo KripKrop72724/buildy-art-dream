@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import Lottie from 'lottie-react';
+import Lottie, { LottieRefCurrentProps } from 'lottie-react';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { SafeImage } from '@/components/ui/safe-image';
 
@@ -60,10 +60,9 @@ export const LottieAnimation = ({
   const [isPlaying, setIsPlaying] = useState(autoplay);
   const [isInView, setIsInView] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const lottieRef = useRef<any>(null);
+  const lottieRef = useRef<LottieRefCurrentProps>(null);
   const loadedRef = useRef(false);
   const watchdogRef = useRef<ReturnType<typeof window.setTimeout> | null>(null);
-  const lottieRef = useRef<unknown>(null);
 
   // Size classes
   const sizeClasses = {
@@ -85,13 +84,6 @@ export const LottieAnimation = ({
       try {
         const data = await getAnimation(animationPath);
         if (cancelled) return;
-        
-        if (!ok) {
-          console.warn('Lottie assets failed to load, using static fallback:', animationPath);
-          setUseFallback(true);
-          setAnimationData(null);
-          return;
-        }
         if (import.meta.env.DEV) {
           console.debug('Lottie loaded:', animationPath);
         }

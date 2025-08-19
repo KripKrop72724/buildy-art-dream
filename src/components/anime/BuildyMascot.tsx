@@ -202,30 +202,3 @@ export const WalkingBuildyMascot = (props: Omit<BuildyMascotProps, 'animation'>)
 export const CleaningBuildyMascot = (props: Omit<BuildyMascotProps, 'animation'>) => (
   <BuildyMascot {...props} animation="clean" />
 );
-
-// Hook for mascot animations
-export const useBuildyMascot = () => {
-  const [animation, setAnimation] = useState<BuildyMascotProps['animation']>('idle');
-  const [isPlaying, setIsPlaying] = useState(true);
-
-  const play = (newAnimation?: BuildyMascotProps['animation']) => {
-    if (newAnimation) setAnimation(newAnimation);
-    setIsPlaying(true);
-  };
-
-  const pause = () => setIsPlaying(false);
-  
-  const reset = () => {
-    setAnimation('idle');
-    setIsPlaying(true);
-  };
-
-  return {
-    animation,
-    isPlaying,
-    play,
-    pause,
-    reset,
-    setAnimation
-  };
-};

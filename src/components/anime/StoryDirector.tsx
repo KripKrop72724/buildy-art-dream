@@ -152,25 +152,14 @@ export const StoryDirector: React.FC<StoryDirectorProps> = ({
         setStartTime(Date.now());
       }
       if (!isStoryActive) {
-        setIsStoryActive(true);
-        console.debug('[StoryDirector] Story started', { beatId: beat.id });
-      }
-    },
-    [isStoryActive, startTime]
-  );
-
-  const triggerBeat = (beat: StoryBeat) => {
-    setCurrentBeat(beat);
-    if (!startTime) {
-      setStartTime(Date.now());
-    }
-    if (!isStoryActive) {
       setIsStoryActive(true);
       if (import.meta.env.DEV) {
         console.debug('[StoryDirector] Story started', { beatId: beat.id });
       }
-    }
-  };
+      }
+    },
+    [isStoryActive, startTime]
+  );
 
 
   const setStoryActive = useCallback((active: boolean) => {
