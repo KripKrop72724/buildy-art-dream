@@ -217,8 +217,34 @@ export const HeroSlide: React.FC<HeroSlideProps> = ({ data }) => {
     }
   };
 
+  // Service-specific story labels
+  const getServiceLabels = (service: string) => {
+    const labelMap = {
+      pool: {
+        intro: 'Analyzing pool chemistry…',
+        action: 'Cleaning & balancing…',
+        payoff: 'Crystal clear water!'
+      },
+      pest: {
+        intro: 'Detecting pest activity…',  
+        action: 'Applying treatment…',
+        payoff: 'Pests eliminated!'
+      },
+      deepClean: {
+        intro: 'Assessing surfaces…',
+        action: 'Deep cleaning in progress…',
+        payoff: 'Spotless perfection!'
+      }
+    };
+    return labelMap[service as keyof typeof labelMap] || labelMap.deepClean;
+  };
+
   return (
-    <StoryDirector duration={data.durationMs} onStoryComplete={() => setStoryActive(false)}>
+    <StoryDirector 
+      duration={data.durationMs} 
+      onStoryComplete={() => setStoryActive(false)}
+      serviceLabels={getServiceLabels(data.service)}
+    >
       <StorySync active={storyActive} />
       <div className="min-h-screen flex items-center justify-center px-4 py-8 relative overflow-hidden">
         {/* Background gradient */}
