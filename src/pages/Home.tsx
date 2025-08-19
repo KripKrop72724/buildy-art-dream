@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Shield, Clock, Users, Star, ChevronDown } from 'lucide-react';
+import { ArrowRight, Shield, Clock, Users, Star, ChevronDown, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -235,19 +235,21 @@ const Home = () => {
           <div className="max-w-4xl mx-auto">
             <div className="grid md:grid-cols-4 gap-8">
               {[
-                { step: '01', title: 'Contact Us', description: 'Call, message, or use our online form', icon: '📞' },
-                { step: '02', title: 'Schedule Visit', description: 'We arrange a convenient time for assessment', icon: '📅' },
-                { step: '03', title: 'Get Service', description: 'Our kawaii team provides professional care', icon: '🎯' },
-                { step: '04', title: 'Enjoy Results', description: 'Sparkling clean, pest-free, well-maintained property', icon: '✨' },
+                { step: '01', title: 'Contact Us', description: 'Call, message, or use our online form', icon: Phone },
+                { step: '02', title: 'Schedule Visit', description: 'We arrange a convenient time for assessment', icon: Clock },
+                { step: '03', title: 'Get Service', description: 'Our kawaii team provides professional care', icon: Shield },
+                { step: '04', title: 'Enjoy Results', description: 'Sparkling clean, pest-free, well-maintained property', icon: Star },
               ].map((item, index) => (
                 <ScrollTriggeredAnimation
                   key={item.step}
                   animation="slideUp"
                   delay={index * 0.15}
-                >
-                  <div className="text-center">
-                    <div className="text-4xl mb-4">{item.icon}</div>
-                    <div className="w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center mx-auto mb-4 font-display font-bold">
+                 >
+                   <div className="text-center">
+                     <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                       <item.icon className="h-8 w-8 text-primary" />
+                     </div>
+                     <div className="w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center mx-auto mb-4 font-display font-bold">
                       {item.step}
                     </div>
                     <h3 className="text-xl font-display font-semibold mb-2">

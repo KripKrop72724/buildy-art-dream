@@ -19,7 +19,7 @@ export const SafeImage: React.FC<SafeImageProps> = ({
   // Debug logging for image loading
   React.useEffect(() => {
     if (src) {
-      console.log('🖼️ SafeImage attempting to load:', src);
+      console.log('SafeImage attempting to load:', src);
     }
   }, [src]);
 
@@ -28,7 +28,7 @@ export const SafeImage: React.FC<SafeImageProps> = ({
       if (!hasFailed) {
         setHasFailed(true);
         setCurrentSrc(fallbackSrc);
-        console.error('🖼️ SafeImage failed to load:', src, '→ falling back to:', fallbackSrc);
+        console.error('SafeImage failed to load:', src, '→ falling back to:', fallbackSrc);
       }
       onError?.(e);
     },

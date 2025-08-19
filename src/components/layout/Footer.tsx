@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { Facebook, Instagram, Twitter, Linkedin, MapPin, Phone, Mail } from 'lucide-react';
+import { Facebook, Instagram, Twitter, Linkedin, MapPin, Phone, Mail, Heart } from 'lucide-react';
 import { useDirection } from '@/hooks/useDirection';
 
 export const Footer = () => {
@@ -202,8 +202,8 @@ export const Footer = () => {
             <p className="text-sm text-muted-foreground font-body">
               © 2024 BuildCare UAE. All rights reserved.
             </p>
-            <p className="text-sm text-muted-foreground font-body mt-2 md:mt-0">
-              Made with ❤️ for the UAE community
+            <p className="text-sm text-muted-foreground font-body mt-2 md:mt-0 flex items-center justify-center md:justify-end gap-1">
+              Made with <Heart className="h-3 w-3 text-red-500" /> for the UAE community
             </p>
           </div>
         </motion.div>

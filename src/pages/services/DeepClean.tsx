@@ -246,7 +246,7 @@ const DeepClean = () => {
                 </Card>
                 <Card className="p-8 bg-accent/10 border-accent/20">
                   <h3 className="text-2xl font-display font-semibold mb-4 text-accent">
-                    After ✨
+                    After
                   </h3>
                   <ul className="space-y-2 text-left">
                     <li>• Sparkling clean surfaces</li>

@@ -69,16 +69,16 @@ export const MultiStepContactForm = () => {
 
   const generateWhatsAppMessage = () => {
     const message = encodeURIComponent(
-      `Hi BuildCare UAE! 👋\n\n` +
-      `🏗️ Service: ${formData.serviceType}\n` +
-      `📍 Location: ${formData.location}\n` +
-      `⚡ Urgency: ${formData.urgency}\n` +
-      `🏢 Property: ${formData.propertyType}\n` +
-      `👤 Name: ${formData.name}\n` +
-      `📞 Phone: ${formData.phone}\n` +
-      `📧 Email: ${formData.email}\n` +
-      `🕐 Best Time: ${formData.bestTime}\n\n` +
-      `📝 Details: ${formData.message}\n\n` +
+      `Hi BuildCare UAE!\n\n` +
+      `Service: ${formData.serviceType}\n` +
+      `Location: ${formData.location}\n` +
+      `Urgency: ${formData.urgency}\n` +
+      `Property: ${formData.propertyType}\n` +
+      `Name: ${formData.name}\n` +
+      `Phone: ${formData.phone}\n` +
+      `Email: ${formData.email}\n` +
+      `Best Time: ${formData.bestTime}\n\n` +
+      `Details: ${formData.message}\n\n` +
       `I'd like to get a quote for this service. Thank you!`
     );
     
@@ -93,7 +93,7 @@ export const MultiStepContactForm = () => {
     await new Promise(resolve => setTimeout(resolve, 1500));
     
     toast({
-      title: "Message Sent! 🎉",
+      title: "Message Sent!",
       description: "We'll get back to you within 30 minutes during business hours.",
     });
     
@@ -196,11 +196,11 @@ export const MultiStepContactForm = () => {
                       <SelectValue placeholder="Select a service" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="pool">🏊 Pool Maintenance</SelectItem>
-                      <SelectItem value="pest">🐛 Pest Control</SelectItem>
-                      <SelectItem value="cleaning">✨ Deep Cleaning</SelectItem>
-                      <SelectItem value="maintenance">🔧 General Maintenance</SelectItem>
-                      <SelectItem value="emergency">🚨 Emergency Service</SelectItem>
+                      <SelectItem value="pool">Pool Maintenance</SelectItem>
+                      <SelectItem value="pest">Pest Control</SelectItem>
+                      <SelectItem value="cleaning">Deep Cleaning</SelectItem>
+                      <SelectItem value="maintenance">General Maintenance</SelectItem>
+                      <SelectItem value="emergency">Emergency Service</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -230,10 +230,10 @@ export const MultiStepContactForm = () => {
                       <SelectValue placeholder="Select urgency level" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="emergency">🚨 Emergency (Same day)</SelectItem>
-                      <SelectItem value="urgent">⚡ Urgent (Within 2-3 days)</SelectItem>
-                      <SelectItem value="soon">📅 Soon (Within a week)</SelectItem>
-                      <SelectItem value="flexible">🗓️ Flexible (Anytime)</SelectItem>
+                      <SelectItem value="emergency">Emergency (Same day)</SelectItem>
+                      <SelectItem value="urgent">Urgent (Within 2-3 days)</SelectItem>
+                      <SelectItem value="soon">Soon (Within a week)</SelectItem>
+                      <SelectItem value="flexible">Flexible (Anytime)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -281,9 +281,9 @@ export const MultiStepContactForm = () => {
                       <SelectValue placeholder="How would you like us to contact you?" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="whatsapp">📱 WhatsApp</SelectItem>
-                      <SelectItem value="phone">📞 Phone Call</SelectItem>
-                      <SelectItem value="email">📧 Email</SelectItem>
+                      <SelectItem value="whatsapp">WhatsApp</SelectItem>
+                      <SelectItem value="phone">Phone Call</SelectItem>
+                      <SelectItem value="email">Email</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -300,12 +300,12 @@ export const MultiStepContactForm = () => {
                       <SelectValue placeholder="What type of property?" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="apartment">🏠 Apartment</SelectItem>
-                      <SelectItem value="villa">🏘️ Villa</SelectItem>
-                      <SelectItem value="office">🏢 Office</SelectItem>
-                      <SelectItem value="retail">🏪 Retail Space</SelectItem>
-                      <SelectItem value="warehouse">🏭 Warehouse</SelectItem>
-                      <SelectItem value="other">🏗️ Other</SelectItem>
+                      <SelectItem value="apartment">Apartment</SelectItem>
+                      <SelectItem value="villa">Villa</SelectItem>
+                      <SelectItem value="office">Office</SelectItem>
+                      <SelectItem value="retail">Retail Space</SelectItem>
+                      <SelectItem value="warehouse">Warehouse</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -317,10 +317,10 @@ export const MultiStepContactForm = () => {
                       <SelectValue placeholder="When can we reach you?" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="morning">🌅 Morning (8 AM - 12 PM)</SelectItem>
-                      <SelectItem value="afternoon">☀️ Afternoon (12 PM - 6 PM)</SelectItem>
-                      <SelectItem value="evening">🌆 Evening (6 PM - 9 PM)</SelectItem>
-                      <SelectItem value="anytime">⏰ Anytime</SelectItem>
+                      <SelectItem value="morning">Morning (8 AM - 12 PM)</SelectItem>
+                      <SelectItem value="afternoon">Afternoon (12 PM - 6 PM)</SelectItem>
+                      <SelectItem value="evening">Evening (6 PM - 9 PM)</SelectItem>
+                      <SelectItem value="anytime">Anytime</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

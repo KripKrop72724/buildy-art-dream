@@ -32,7 +32,8 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
   const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   const manualTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastManualRef = useRef(0);
-  const MAX_CONCURRENT = 4;
+  const [coolingDown, setCoolingDown] = useState(false);
+  const MAX_CONCURRENT = 3;
 
   const resolveAsset = (path: string) =>
     `${import.meta.env.BASE_URL.replace(/\/$/, '')}/${path.replace(/^\//, '')}`;
@@ -141,33 +142,42 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
 
   // Manual one-off trigger for extra interactivity
   useEffect(() => {
-    if (!manualTriggerKey || isSeriousMode) return;
+    if (!manualTriggerKey || isSeriousMode || coolingDown) return;
     const now = Date.now();
-    if (now - lastManualRef.current < 800) return;
+    if (now - lastManualRef.current < 1200) return; // Increased throttle to 1200ms
+    
     lastManualRef.current = now;
+    setCoolingDown(true);
+    
     const extra: InteractionBeat = serviceType === 'pest'
       ? { id: `manual-pest-${now}`, delay: 0, duration: 1500, type: 'pest-retreat', message: 'Pests retreat!', position: { x: 60, y: 30 } }
       : { id: `manual-sparkle-${now}`, delay: 0, duration: 1300, type: 'sparkle-burst', message: 'Extra sparkle!', position: { x: 55, y: 45 } };
+    
     if (import.meta.env.DEV) {
       console.debug('[Orchestrator] Manual trigger', extra.id, extra);
     }
+    
     if (manualTimeoutRef.current) {
       clearTimeout(manualTimeoutRef.current);
       manualTimeoutRef.current = null;
     }
+    
     addInteraction(extra, true);
     triggerBeat({ id: extra.id, timestamp: now, type: 'interaction', content: extra.message, position: extra.position });
-    manualTimeoutRef.current = setTimeout(() =>
-      setActiveInteractions(prev => prev.filter(i => i.id !== extra.id)),
-      extra.duration
-    );
+    
+    manualTimeoutRef.current = setTimeout(() => {
+      setActiveInteractions(prev => prev.filter(i => i.id !== extra.id));
+      setCoolingDown(false); // Reset cooling down state
+    }, extra.duration);
+    
     return () => {
       if (manualTimeoutRef.current) {
         clearTimeout(manualTimeoutRef.current);
         manualTimeoutRef.current = null;
       }
+      setCoolingDown(false);
     };
-  }, [manualTriggerKey, isSeriousMode, serviceType, triggerBeat]);
+  }, [manualTriggerKey, isSeriousMode, serviceType, triggerBeat, coolingDown]);
 
   const renderInteraction = (interaction: InteractionBeat) => {
     const baseClasses = "absolute pointer-events-none z-50";
