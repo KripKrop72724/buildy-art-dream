@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useStory } from './StoryDirector';
+import { SafeImage } from '@/components/ui/safe-image';
 
 interface MicroInteractionProps {
   serviceType: string;
@@ -30,6 +31,8 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
   const [activeInteractions, setActiveInteractions] = useState<InteractionBeat[]>([]);
   const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   const manualTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastManualTriggerRef = useRef<number>(0);
+  const MAX_CONCURRENT_INTERACTIONS = 3;
 
   const getServiceInteractions = (service: string): InteractionBeat[] => {
     switch (service) {
@@ -37,23 +40,23 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
         return [
           { id: 'pool-start', delay: 500, duration: 2000, type: 'squeegee', message: 'Starting pool cleaning...', position: { x: 30, y: 70 } },
           { id: 'pool-clean', delay: 2500, duration: 1500, type: 'sparkle-burst', message: 'Crystal clear water!', position: { x: 70, y: 30 } },
-          { id: 'pool-complete', delay: 4000, duration: 1000, type: 'celebration', message: 'Pool perfection achieved! 🏊‍♂️', position: { x: 50, y: 50 } }
+          { id: 'pool-complete', delay: 4000, duration: 1000, type: 'celebration', message: 'Pool perfection achieved!', position: { x: 50, y: 50 } }
         ];
       
       case 'pest':
         return [
           { id: 'pest-detect', delay: 300, duration: 1000, type: 'pest-retreat', message: 'Pests detected!', position: { x: 80, y: 20 } },
           { id: 'pest-spray', delay: 1300, duration: 2000, type: 'pest-retreat', message: 'Safe treatment applied...', position: { x: 60, y: 40 } },
-          { id: 'pest-retreat', delay: 3300, duration: 1500, type: 'pest-retreat', message: 'Pests retreating! 🏃‍♂️', position: { x: 20, y: 70 } },
-          { id: 'pest-victory', delay: 4800, duration: 1000, type: 'celebration', message: 'Mission accomplished! 🛡️', position: { x: 50, y: 50 } }
+          { id: 'pest-retreat', delay: 3300, duration: 1500, type: 'pest-retreat', message: 'Pests retreating!', position: { x: 20, y: 70 } },
+          { id: 'pest-victory', delay: 4800, duration: 1000, type: 'celebration', message: 'Mission accomplished!', position: { x: 50, y: 50 } }
         ];
       
       case 'deepClean':
         return [
           { id: 'clean-assess', delay: 400, duration: 1000, type: 'sparkle-burst', message: 'Assessing surfaces...', position: { x: 25, y: 25 } },
           { id: 'clean-scrub', delay: 1400, duration: 2500, type: 'squeegee', message: 'Deep cleaning in progress...', position: { x: 50, y: 60 } },
-          { id: 'clean-sparkle', delay: 3900, duration: 2000, type: 'sparkle-burst', message: 'Surfaces sparkling! ✨', position: { x: 75, y: 25 } },
-          { id: 'clean-done', delay: 5900, duration: 1000, type: 'celebration', message: 'Spotless perfection! 🌟', position: { x: 50, y: 50 } }
+          { id: 'clean-sparkle', delay: 3900, duration: 2000, type: 'sparkle-burst', message: 'Surfaces sparkling!', position: { x: 75, y: 25 } },
+          { id: 'clean-done', delay: 5900, duration: 1000, type: 'celebration', message: 'Spotless perfection!', position: { x: 50, y: 50 } }
         ];
       
       default:
@@ -74,7 +77,12 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
         if (import.meta.env.DEV) {
           console.debug('[Orchestrator] Triggering interaction', interaction.id, interaction);
         }
-        setActiveInteractions(prev => [...prev, interaction]);
+        setActiveInteractions(prev => {
+          if (prev.length >= MAX_CONCURRENT_INTERACTIONS) {
+            return prev;
+          }
+          return [...prev, interaction];
+        });
         
         triggerBeat({
           id: interaction.id,
@@ -116,22 +124,40 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
     };
   }, [isActive, serviceType, isSeriousMode, triggerBeat, onComplete]);
 
-  // Manual one-off trigger for extra interactivity
+  // Manual one-off trigger for extra interactivity with throttling
   useEffect(() => {
     if (!manualTriggerKey || isSeriousMode) return;
+    
     const now = Date.now();
-    const extra: InteractionBeat = serviceType === 'pest'
-      ? { id: `manual-pest-${now}`, delay: 0, duration: 1500, type: 'pest-retreat', message: 'Pests retreat!', position: { x: 60, y: 30 } }
-      : { id: `manual-sparkle-${now}`, delay: 0, duration: 1300, type: 'sparkle-burst', message: 'Extra sparkle!', position: { x: 55, y: 45 } };
-    if (import.meta.env.DEV) {
-      console.debug('[Orchestrator] Manual trigger', extra.id, extra);
+    // Throttle manual triggers to prevent spam (minimum 800ms between triggers)
+    if (now - lastManualTriggerRef.current < 800) {
+      return;
     }
-    setActiveInteractions(prev => [...prev, extra]);
-    triggerBeat({ id: extra.id, timestamp: now, type: 'interaction', content: extra.message, position: extra.position });
-    manualTimeoutRef.current = setTimeout(() =>
-      setActiveInteractions(prev => prev.filter(i => i.id !== extra.id)),
-      extra.duration
-    );
+    
+    // Cap concurrent interactions
+    setActiveInteractions(prev => {
+      if (prev.length >= MAX_CONCURRENT_INTERACTIONS) {
+        return prev;
+      }
+      
+      lastManualTriggerRef.current = now;
+      const extra: InteractionBeat = serviceType === 'pest'
+        ? { id: `manual-pest-${now}`, delay: 0, duration: 1500, type: 'pest-retreat', message: 'Pests retreat!', position: { x: 60, y: 30 } }
+        : { id: `manual-sparkle-${now}`, delay: 0, duration: 1300, type: 'sparkle-burst', message: 'Extra sparkle!', position: { x: 55, y: 45 } };
+      
+      if (import.meta.env.DEV) {
+        console.debug('[Orchestrator] Manual trigger', extra.id, extra);
+      }
+      
+      triggerBeat({ id: extra.id, timestamp: now, type: 'interaction', content: extra.message, position: extra.position });
+      manualTimeoutRef.current = setTimeout(() =>
+        setActiveInteractions(prev => prev.filter(i => i.id !== extra.id)),
+        extra.duration
+      );
+      
+      return [...prev, extra];
+    });
+    
     return () => {
       if (manualTimeoutRef.current) {
         clearTimeout(manualTimeoutRef.current);
@@ -172,7 +198,7 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
         return (
           <motion.div
             key={interaction.id}
-            className={`${baseClasses} text-6xl drop-shadow-lg`}
+            className={`${baseClasses} w-12 h-12`}
             style={style}
             initial={{ scale: 0.8, rotate: 0, x: 0, y: 0 }}
             animate={{
@@ -184,7 +210,12 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
             exit={{ opacity: 0, x: -180 }}
             transition={{ duration: Math.max(interaction.duration / 1000, 0.8), ease: "easeInOut" }}
           >
-            🐛💨
+            <SafeImage
+              src="/anime/pests/pest-retreat-01.png"
+              alt="Pest retreating"
+              className="w-full h-full object-contain drop-shadow-lg"
+              fallbackSrc="/anime/pests/pest-sad-face.png"
+            />
           </motion.div>
         );
 
@@ -218,14 +249,19 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
         return (
           <motion.div
             key={interaction.id}
-            className={`${baseClasses} text-7xl drop-shadow-lg`}
+            className={`${baseClasses} w-16 h-16`}
             style={style}
             initial={{ scale: 0, y: 50 }}
             animate={{ scale: [0, 1.2, 1], y: 0 }}
             exit={{ scale: 0, y: -50 }}
             transition={{ duration: 0.6, ease: "backOut" }}
           >
-            🎉
+            <SafeImage
+              src="/anime/mascots/buildy-sparkle-clean-01.png"
+              alt="Celebration"
+              className="w-full h-full object-contain drop-shadow-lg"
+              fallbackSrc="/anime/static/buildy-static.png"
+            />
           </motion.div>
         );
 
