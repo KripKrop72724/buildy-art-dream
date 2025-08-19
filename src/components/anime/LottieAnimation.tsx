@@ -35,6 +35,7 @@ export const LottieAnimation = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const lottieRef = useRef<any>(null);
   const loadedRef = useRef(false);
+  const watchdogRef = useRef<ReturnType<typeof window.setTimeout> | null>(null);
 
   // Size classes
   const sizeClasses = {
@@ -106,9 +107,11 @@ export const LottieAnimation = ({
           setAnimationData(null);
           return;
         }
-        console.debug('Lottie loaded:', animationPath);
+        if (import.meta.env.DEV) {
+          console.debug('Lottie loaded:', animationPath);
+        }
         loadedRef.current = true;
-        if (useFallback) {
+        if (useFallback && import.meta.env.DEV) {
           console.debug('Lottie recovered from fallback', animationPath);
         }
         setUseFallback(false);
@@ -121,7 +124,8 @@ export const LottieAnimation = ({
       }
     };
 
-    const watchdog = window.setTimeout(() => {
+    if (watchdogRef.current) window.clearTimeout(watchdogRef.current);
+    watchdogRef.current = window.setTimeout(() => {
       if (!cancelled && !loadedRef.current) {
         console.warn('Lottie timed out, using fallback:', animationPath);
         setUseFallback(true);
@@ -132,7 +136,10 @@ export const LottieAnimation = ({
 
     return () => {
       cancelled = true;
-      window.clearTimeout(watchdog);
+      if (watchdogRef.current) {
+        window.clearTimeout(watchdogRef.current);
+        watchdogRef.current = null;
+      }
     };
   }, [animationPath, isSeriousMode]);
 

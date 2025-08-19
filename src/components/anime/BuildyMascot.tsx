@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Lottie from 'lottie-react';
 
@@ -24,6 +24,7 @@ export const BuildyMascot = ({
   const [currentFrame, setCurrentFrame] = useState(0);
   const [isPlaying, setIsPlaying] = useState(autoplay);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Check for reduced motion preference
   useEffect(() => {
@@ -83,7 +84,8 @@ export const BuildyMascot = ({
     const duration = getAnimationDuration();
     const interval = duration / frames.length;
 
-    const timer = setInterval(() => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    intervalRef.current = setInterval(() => {
       setCurrentFrame(prev => {
         const nextFrame = (prev + 1) % frames.length;
         if (nextFrame === 0 && !loop) {
@@ -94,8 +96,21 @@ export const BuildyMascot = ({
       });
     }, interval);
 
-    return () => clearInterval(timer);
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
   }, [animation, loop, isPlaying, prefersReducedMotion, onComplete]);
+
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, []);
 
   // Lottie animation data (simplified - would be imported from JSON files)
   const lottieAnimations = {

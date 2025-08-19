@@ -19,6 +19,7 @@ export const SqueegeEffectOverlay = ({
   const [isWiping, setIsWiping] = useState(false);
   const [showSqueegee, setShowSqueegee] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const wipeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Precompute random positions to avoid hydration mismatches
   const dropletPositions = useMemo(
     () =>
@@ -42,15 +43,29 @@ export const SqueegeEffectOverlay = ({
       setIsWiping(true);
       setShowSqueegee(true);
       
-      const timer = setTimeout(() => {
+      if (wipeTimerRef.current) clearTimeout(wipeTimerRef.current);
+      wipeTimerRef.current = setTimeout(() => {
         setIsWiping(false);
         setShowSqueegee(false);
         onComplete?.();
       }, 2000);
 
-      return () => clearTimeout(timer);
+      return () => {
+        if (wipeTimerRef.current) {
+          clearTimeout(wipeTimerRef.current);
+          wipeTimerRef.current = null;
+        }
+      };
     }
   }, [trigger, isSeriousMode, onComplete]);
+
+  useEffect(() => {
+    return () => {
+      if (wipeTimerRef.current) {
+        clearTimeout(wipeTimerRef.current);
+      }
+    };
+  }, []);
 
   if (isSeriousMode) {
     return <div className={className}>{children}</div>;

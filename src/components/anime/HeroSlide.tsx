@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '../ui/button';
 import { LottieAnimation } from './LottieAnimation';
@@ -34,15 +34,19 @@ export const HeroSlide: React.FC<HeroSlideProps> = ({ data }) => {
   const [storyActive, setStoryActive] = useState(false);
   const [interactionPhase, setInteractionPhase] = useState(0);
   const [manualTriggerKey, setManualTriggerKey] = useState(0);
+  const introTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     // Start story sequence when slide mounts
-    const timer = setTimeout(() => {
+    introTimerRef.current = setTimeout(() => {
       setStoryActive(true);
     }, 500);
 
     return () => {
-      clearTimeout(timer);
+      if (introTimerRef.current) {
+        clearTimeout(introTimerRef.current);
+        introTimerRef.current = null;
+      }
       setStoryActive(false);
       setInteractionPhase(0);
     };
