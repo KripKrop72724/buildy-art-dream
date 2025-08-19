@@ -16,12 +16,19 @@ export const SafeImage: React.FC<SafeImageProps> = ({
   const [currentSrc, setCurrentSrc] = useState<string | undefined>(src as string | undefined);
   const [hasFailed, setHasFailed] = useState(false);
 
+  // Debug logging for image loading
+  React.useEffect(() => {
+    if (src) {
+      console.log('🖼️ SafeImage attempting to load:', src);
+    }
+  }, [src]);
+
   const handleError = useCallback<React.ReactEventHandler<HTMLImageElement>>(
     (e) => {
       if (!hasFailed) {
         setHasFailed(true);
         setCurrentSrc(fallbackSrc);
-        console.warn('SafeImage: falling back for', src);
+        console.error('🖼️ SafeImage failed to load:', src, '→ falling back to:', fallbackSrc);
       }
       onError?.(e);
     },

@@ -62,7 +62,7 @@ export const LottieAnimation = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const lottieRef = useRef<LottieRefCurrentProps>(null);
   const loadedRef = useRef(false);
-  const watchdogRef = useRef<ReturnType<typeof window.setTimeout> | null>(null);
+  const watchdogRef = useRef<number | null>(null);
 
   // Size classes
   const sizeClasses = {
@@ -84,19 +84,19 @@ export const LottieAnimation = ({
       try {
         const data = await getAnimation(animationPath);
         if (cancelled) return;
-        if (import.meta.env.DEV) {
-          console.debug('Lottie loaded:', animationPath);
-        }
+        
+        console.log('✅ Lottie animation loaded successfully:', animationPath);
         loadedRef.current = true;
-        if (useFallback && import.meta.env.DEV) {
-          console.debug('Lottie recovered from fallback', animationPath);
+        
+        if (useFallback) {
+          console.log('🔄 Lottie recovered from fallback state:', animationPath);
         }
 
         setUseFallback(false);
         setAnimationData(data);
       } catch (error) {
         if (cancelled) return;
-        console.warn(`Failed to load Lottie animation: ${animationPath}`, error);
+        console.error('❌ Failed to load Lottie animation:', animationPath, error);
         setUseFallback(true);
         setAnimationData(null);
       }
@@ -106,10 +106,10 @@ export const LottieAnimation = ({
     if (watchdogRef.current) window.clearTimeout(watchdogRef.current);
     watchdogRef.current = window.setTimeout(() => {
       if (!cancelled && !loadedRef.current) {
-        console.warn('Lottie timed out, using fallback:', animationPath);
+        console.warn('Lottie watchdog timeout - falling back to static image:', animationPath);
         setUseFallback(true);
       }
-    }, 3500);
+    }, 5000);
 
 
     load();
