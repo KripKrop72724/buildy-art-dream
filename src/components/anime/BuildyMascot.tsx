@@ -2,6 +2,11 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Lottie from 'lottie-react';
 
+// Ensure asset paths respect the configured base URL so images don't
+// break when the site is deployed in a subdirectory.
+const resolveAsset = (path: string) =>
+  `${import.meta.env.BASE_URL.replace(/\/$/, '')}/${path.replace(/^\//, '')}`;
+
 interface BuildyMascotProps {
   animation?: 'idle' | 'walk' | 'clean' | 'spray' | 'squeegee';
   size?: 'sm' | 'md' | 'lg' | 'xl';
@@ -37,22 +42,22 @@ export const BuildyMascot = ({
   }, []);
 
   // Animation frame sequences
-  const frameSequences = {
-    idle: [
-      '/anime/mascots/buildy-idle-wave-01.png',
-      '/anime/mascots/buildy-idle-wave-02.png'
-    ],
-    walk: [
-      '/anime/mascots/buildy-walk-01.png', 
-      '/anime/mascots/buildy-walk-02.png'
-    ],
-    clean: [
-      '/anime/mascots/buildy-sparkle-clean-01.png',
-      '/anime/mascots/buildy-sparkle-clean-02.png'
-    ],
-    spray: ['/anime/mascots/buildy-sprayer-01.png'],
-    squeegee: ['/anime/mascots/buildy-squeegee-01.png']
-  };
+    const frameSequences = {
+      idle: [
+        resolveAsset('/anime/mascots/buildy-idle-wave-01.png'),
+        resolveAsset('/anime/mascots/buildy-idle-wave-02.png')
+      ],
+      walk: [
+        resolveAsset('/anime/mascots/buildy-walk-01.png'),
+        resolveAsset('/anime/mascots/buildy-walk-02.png')
+      ],
+      clean: [
+        resolveAsset('/anime/mascots/buildy-sparkle-clean-01.png'),
+        resolveAsset('/anime/mascots/buildy-sparkle-clean-02.png')
+      ],
+      spray: [resolveAsset('/anime/mascots/buildy-sprayer-01.png')],
+      squeegee: [resolveAsset('/anime/mascots/buildy-squeegee-01.png')]
+    };
 
   // Size classes
   const sizeClasses = {
@@ -114,16 +119,16 @@ export const BuildyMascot = ({
 
   // Lottie animation data (simplified - would be imported from JSON files)
   const lottieAnimations = {
-    idle: '/anime/lottie/buildy-idle-wave.json',
-    walk: '/anime/lottie/buildy-walk.json', // Would need to be created
-    clean: '/anime/lottie/buildy-clean.json' // Would need to be created
-  };
+      idle: resolveAsset('/anime/lottie/buildy-idle-wave.json'),
+      walk: resolveAsset('/anime/lottie/buildy-walk.json'), // Would need to be created
+      clean: resolveAsset('/anime/lottie/buildy-clean.json') // Would need to be created
+    };
 
   // Static fallback for reduced motion
   if (prefersReducedMotion) {
     return (
       <img
-        src="/anime/static/buildy-static.png"
+        src={resolveAsset('/anime/static/buildy-static.png')}
         alt="BuildCare mascot Buildy"
         className={`${sizeClasses[size]} object-contain ${className}`}
       />

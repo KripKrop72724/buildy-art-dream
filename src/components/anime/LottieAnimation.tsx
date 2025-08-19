@@ -4,6 +4,11 @@ import Lottie, { LottieRefCurrentProps } from 'lottie-react';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { SafeImage } from '@/components/ui/safe-image';
 
+// Resolve asset paths respecting Vite's base URL. This prevents broken
+// references when the app is served from a subdirectory.
+const resolveAsset = (path: string) =>
+  `${import.meta.env.BASE_URL.replace(/\/$/, '')}/${path.replace(/^\//, '')}`;
+
 interface LottieAnimationProps {
   animationPath: string;
   fallbackImage?: string;
@@ -74,6 +79,10 @@ export const LottieAnimation = ({
   };
 
   const maxSizeStyle = maxSize ? { maxWidth: `${maxSize}px`, maxHeight: `${maxSize}px` } : {};
+
+  const resolvedFallback = resolveAsset(
+    fallbackImage || '/anime/static/buildy-static.png'
+  );
 
   // Load Lottie animation data using dynamic import
   useEffect(() => {
@@ -163,9 +172,9 @@ export const LottieAnimation = ({
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <SafeImage 
-          src={fallbackImage || '/anime/static/buildy-static.png'} 
-          alt="Service illustration" 
+        <SafeImage
+          src={resolvedFallback}
+          alt="Service illustration"
           className="w-full h-full object-contain"
         />
       </motion.div>
@@ -174,14 +183,14 @@ export const LottieAnimation = ({
 
   if (useFallback || !animationData) {
     return (
-      <motion.div 
+      <motion.div
         className={`${sizeClasses[size]} ${className} flex items-center justify-center`}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
       >
-        <SafeImage 
-          src={fallbackImage || '/anime/static/buildy-static.png'}
+        <SafeImage
+          src={resolvedFallback}
           alt="Service illustration"
           className="w-full h-full object-contain"
         />
@@ -266,7 +275,7 @@ export const preloadLottieAssets = async (animationPath: string, fallbackImage?:
     // Preload fallback image
     if (fallbackImage) {
       const img = new Image();
-      img.src = fallbackImage;
+      img.src = resolveAsset(fallbackImage);
     }
   } catch (error) {
     console.warn('Preload failed for:', animationPath, error);
