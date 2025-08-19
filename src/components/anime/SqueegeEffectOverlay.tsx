@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
+import { SafeImage } from '@/components/ui/safe-image';
 
 interface SqueegeEffectOverlayProps {
   children: React.ReactNode;
@@ -22,6 +23,9 @@ export const SqueegeEffectOverlay = ({
 
   const [dropletPositions, setDropletPositions] = useState<Array<{ x: number; y: number }>>([]);
   const [sparklePositions, setSparklePositions] = useState<Array<{ left: number; top: number }>>([]);
+
+  const resolveAsset = (path: string) =>
+    `${import.meta.env.BASE_URL.replace(/\/$/, '')}/${path.replace(/^\//, '')}`;
 
   const createSeededRandom = (seed = 42) => {
     return () => {
@@ -160,7 +164,7 @@ export const SqueegeEffectOverlay = ({
             {sparklePositions.map(({ left, top }, i) => (
               <motion.div
                 key={`sparkle-${i}`}
-                className="absolute text-yellow-400 text-xl"
+                className="absolute w-5 h-5"
                 style={{
                   left: left + '%',
                   top: top + '%'
@@ -176,7 +180,7 @@ export const SqueegeEffectOverlay = ({
                   ease: "easeOut"
                 }}
               >
-                ✨
+                <SafeImage src={resolveAsset('/anime/effects/droplet-hop-01.png')} alt="sparkle" className="w-5 h-5" />
               </motion.div>
             ))}
           </div>
