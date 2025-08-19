@@ -17,14 +17,15 @@ interface LottieAnimationProps {
 }
 
 // Module-level cache so animations are loaded once per session
-const rawAnimationModules = import.meta.glob('/public/anime/**/*.json', {
+// Lottie JSON files live in `src/anime` so they can be imported as modules
+const rawAnimationModules = import.meta.glob('/src/anime/**/*.json', {
   import: 'default'
 });
 
 const animationModules: Record<string, () => Promise<unknown>> = {};
 Object.keys(rawAnimationModules).forEach((key) => {
-  // Drop the `/public` prefix so callers can use paths like `/anime/foo.json`
-  animationModules[key.replace(/^\/public/, '')] = rawAnimationModules[key];
+  // Drop the `/src` prefix so callers can use paths like `/anime/foo.json`
+  animationModules[key.replace(/^\/src/, '')] = rawAnimationModules[key];
 });
 
 const animationCache: Record<string, Promise<unknown>> = {};
