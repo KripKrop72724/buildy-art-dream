@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useStory } from './StoryDirector';
+import { SafeImage } from '@/components/ui/safe-image';
 
 interface MicroInteractionProps {
   serviceType: string;
@@ -30,6 +31,21 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
   const [activeInteractions, setActiveInteractions] = useState<InteractionBeat[]>([]);
   const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   const manualTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const MAX_CONCURRENT = 6;
+
+  const resolveAsset = (path: string) =>
+    `${import.meta.env.BASE_URL.replace(/\/$/, '')}/${path.replace(/^\//, '')}`;
+
+  const addInteraction = (interaction: InteractionBeat, manual = false) => {
+    setActiveInteractions(prev => {
+      let base = manual ? prev.filter(i => !i.id.startsWith('manual-')) : prev;
+      let next = [...base, interaction];
+      if (next.length > MAX_CONCURRENT) {
+        next = next.slice(next.length - MAX_CONCURRENT);
+      }
+      return next;
+    });
+  };
 
   const getServiceInteractions = (service: string): InteractionBeat[] => {
     switch (service) {
@@ -74,7 +90,7 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
         if (import.meta.env.DEV) {
           console.debug('[Orchestrator] Triggering interaction', interaction.id, interaction);
         }
-        setActiveInteractions(prev => [...prev, interaction]);
+        addInteraction(interaction);
         
         triggerBeat({
           id: interaction.id,
@@ -126,7 +142,11 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
     if (import.meta.env.DEV) {
       console.debug('[Orchestrator] Manual trigger', extra.id, extra);
     }
-    setActiveInteractions(prev => [...prev, extra]);
+    if (manualTimeoutRef.current) {
+      clearTimeout(manualTimeoutRef.current);
+      manualTimeoutRef.current = null;
+    }
+    addInteraction(extra, true);
     triggerBeat({ id: extra.id, timestamp: now, type: 'interaction', content: extra.message, position: extra.position });
     manualTimeoutRef.current = setTimeout(() =>
       setActiveInteractions(prev => prev.filter(i => i.id !== extra.id)),
@@ -172,19 +192,22 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
         return (
           <motion.div
             key={interaction.id}
-            className={`${baseClasses} text-6xl drop-shadow-lg`}
+            className={`${baseClasses} w-10 h-10`}
             style={style}
-            initial={{ scale: 0.8, rotate: 0, x: 0, y: 0 }}
-            animate={{
-              scale: [0.8, 1, 0.9, 1],
-              rotate: [0, 15, -10, 0],
-              x: [0, -120],
-              y: [0, -10],
-            }}
+            initial={{ opacity: 0, x: 0, y: 0 }}
+            animate={{ opacity: 1, x: [0, -120], y: [0, -10] }}
             exit={{ opacity: 0, x: -180 }}
             transition={{ duration: Math.max(interaction.duration / 1000, 0.8), ease: "easeInOut" }}
           >
-            🐛💨
+            <SafeImage src={resolveAsset('/anime/pests/pest-retreat-01.png')} alt="pest" className="w-10 h-10" />
+            <motion.div
+              className="absolute -top-2 left-6 w-6 h-6"
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: [0, 1, 0], scale: [0, 1, 0] }}
+              transition={{ delay: 0.3, duration: 0.8 }}
+            >
+              <SafeImage src={resolveAsset('/anime/pests/pest-white-flag.png')} alt="flag" className="w-6 h-6" />
+            </motion.div>
           </motion.div>
         );
 
@@ -201,7 +224,7 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
             {[...Array(8)].map((_, i) => (
               <motion.div
                 key={i}
-                className="absolute w-2 h-2 bg-yellow-400 rounded-full"
+                className="absolute w-6 h-6"
                 initial={{ scale: 0, x: 0, y: 0 }}
                 animate={{
                   scale: [0, 1, 0],
@@ -209,7 +232,9 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
                   y: Math.sin(i * 45 * Math.PI / 180) * 40
                 }}
                 transition={{ duration: 1.5, delay: i * 0.1 }}
-              />
+              >
+                <SafeImage src={resolveAsset('/anime/effects/droplet-hop-01.png')} alt="sparkle" className="w-6 h-6" />
+              </motion.div>
             ))}
           </motion.div>
         );
@@ -218,14 +243,14 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
         return (
           <motion.div
             key={interaction.id}
-            className={`${baseClasses} text-7xl drop-shadow-lg`}
+            className={`${baseClasses} w-12 h-12`}
             style={style}
             initial={{ scale: 0, y: 50 }}
             animate={{ scale: [0, 1.2, 1], y: 0 }}
             exit={{ scale: 0, y: -50 }}
             transition={{ duration: 0.6, ease: "backOut" }}
           >
-            🎉
+            <SafeImage src={resolveAsset('/anime/effects/droplet-clap.png')} alt="celebration" className="w-12 h-12" />
           </motion.div>
         );
 
