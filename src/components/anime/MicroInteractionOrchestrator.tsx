@@ -79,9 +79,13 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
         });
 
         // Remove interaction after its duration
-        setTimeout(() => {
+        const rmTimeout = setTimeout(() => {
           setActiveInteractions(prev => prev.filter(i => i.id !== interaction.id));
         }, interaction.duration);
+
+        // Nested timers won't be cleared by the outer timeout, so track them
+        // to ensure they don't fire after unmount or re-render
+        timeouts.push(rmTimeout);
       }, interaction.delay);
 
       timeouts.push(timeout);
@@ -97,6 +101,7 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
     timeouts.push(completeTimeout);
 
     return () => {
+      // Cancel any pending timeouts including nested removal timers
       timeouts.forEach(clearTimeout);
       setActiveInteractions([]);
     };
