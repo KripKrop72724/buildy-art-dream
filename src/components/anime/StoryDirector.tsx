@@ -42,11 +42,12 @@ export const StoryDirector: React.FC<StoryDirectorProps> = ({
   const [storyProgress, setStoryProgress] = useState(0);
   const [isStoryActive, setIsStoryActive] = useState(false);
   const [startTime, setStartTime] = useState<number | null>(null);
+  const frameRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!isStoryActive) return;
 
-    const interval = setInterval(() => {
+    const tick = () => {
       if (startTime) {
         const elapsed = Date.now() - startTime;
         const progress = Math.min(elapsed / duration, 1);
@@ -56,11 +57,20 @@ export const StoryDirector: React.FC<StoryDirectorProps> = ({
           setIsStoryActive(false);
           console.debug('[StoryDirector] Story completed');
           onStoryComplete?.();
+          return;
         }
       }
-    }, 16); // 60fps updates
+      frameRef.current = requestAnimationFrame(tick); // schedule next frame
+    };
 
-    return () => clearInterval(interval);
+    // Kick off frame-based progress updates
+    frameRef.current = requestAnimationFrame(tick);
+
+    return () => {
+      if (frameRef.current !== null) {
+        cancelAnimationFrame(frameRef.current);
+      }
+    };
   }, [isStoryActive, startTime, duration, onStoryComplete]);
 
   // Auto narrative beats tied to progress
