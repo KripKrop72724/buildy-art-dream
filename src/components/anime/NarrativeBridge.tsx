@@ -44,7 +44,7 @@ export const NarrativeBridge: React.FC<NarrativeBridgeProps> = ({
             onAnimationComplete={() => scheduleComplete(600)}
           >
             <div className="text-2xl font-bold text-white drop-shadow-lg">
-              From Pool to Pest Protection! 🏊‍♂️➡️🐛
+              From Pool to Pest Protection!
             </div>
           </motion.div>
         );
@@ -60,7 +60,7 @@ export const NarrativeBridge: React.FC<NarrativeBridgeProps> = ({
             onAnimationComplete={() => scheduleComplete(600)}
           >
             <div className="text-2xl font-bold text-white drop-shadow-lg">
-              Now for Deep Cleaning! 🐛➡️✨
+              Now for Deep Cleaning!
             </div>
           </motion.div>
         );
@@ -80,7 +80,7 @@ export const NarrativeBridge: React.FC<NarrativeBridgeProps> = ({
               className="absolute inset-0 z-20 flex items-center justify-center bg-gradient-to-r from-green-500/20 to-blue-500/20"
             >
               <div className="text-2xl font-bold text-white drop-shadow-lg">
-                Back to Pool Perfection! ✨➡️🏊‍♂️
+                Back to Pool Perfection!
               </div>
             </motion.div>
           </RippleTransition>

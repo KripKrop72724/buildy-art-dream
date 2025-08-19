@@ -31,10 +31,17 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
   const [activeInteractions, setActiveInteractions] = useState<InteractionBeat[]>([]);
   const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   const manualTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const MAX_CONCURRENT = 6;
+  const lastManualRef = useRef(0);
+  const MAX_CONCURRENT = 4;
 
   const resolveAsset = (path: string) =>
     `${import.meta.env.BASE_URL.replace(/\/$/, '')}/${path.replace(/^\//, '')}`;
+
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      console.info('[Orchestrator] Emoji-free overlay enabled');
+    }
+  }, []);
 
   const addInteraction = (interaction: InteractionBeat, manual = false) => {
     setActiveInteractions(prev => {
@@ -53,23 +60,23 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
         return [
           { id: 'pool-start', delay: 500, duration: 2000, type: 'squeegee', message: 'Starting pool cleaning...', position: { x: 30, y: 70 } },
           { id: 'pool-clean', delay: 2500, duration: 1500, type: 'sparkle-burst', message: 'Crystal clear water!', position: { x: 70, y: 30 } },
-          { id: 'pool-complete', delay: 4000, duration: 1000, type: 'celebration', message: 'Pool perfection achieved! 🏊‍♂️', position: { x: 50, y: 50 } }
+          { id: 'pool-complete', delay: 4000, duration: 1000, type: 'celebration', message: 'Pool perfection achieved!', position: { x: 50, y: 50 } }
         ];
       
       case 'pest':
         return [
           { id: 'pest-detect', delay: 300, duration: 1000, type: 'pest-retreat', message: 'Pests detected!', position: { x: 80, y: 20 } },
           { id: 'pest-spray', delay: 1300, duration: 2000, type: 'pest-retreat', message: 'Safe treatment applied...', position: { x: 60, y: 40 } },
-          { id: 'pest-retreat', delay: 3300, duration: 1500, type: 'pest-retreat', message: 'Pests retreating! 🏃‍♂️', position: { x: 20, y: 70 } },
-          { id: 'pest-victory', delay: 4800, duration: 1000, type: 'celebration', message: 'Mission accomplished! 🛡️', position: { x: 50, y: 50 } }
+          { id: 'pest-retreat', delay: 3300, duration: 1500, type: 'pest-retreat', message: 'Pests retreating!', position: { x: 20, y: 70 } },
+          { id: 'pest-victory', delay: 4800, duration: 1000, type: 'celebration', message: 'Mission accomplished!', position: { x: 50, y: 50 } }
         ];
       
       case 'deepClean':
         return [
           { id: 'clean-assess', delay: 400, duration: 1000, type: 'sparkle-burst', message: 'Assessing surfaces...', position: { x: 25, y: 25 } },
           { id: 'clean-scrub', delay: 1400, duration: 2500, type: 'squeegee', message: 'Deep cleaning in progress...', position: { x: 50, y: 60 } },
-          { id: 'clean-sparkle', delay: 3900, duration: 2000, type: 'sparkle-burst', message: 'Surfaces sparkling! ✨', position: { x: 75, y: 25 } },
-          { id: 'clean-done', delay: 5900, duration: 1000, type: 'celebration', message: 'Spotless perfection! 🌟', position: { x: 50, y: 50 } }
+          { id: 'clean-sparkle', delay: 3900, duration: 2000, type: 'sparkle-burst', message: 'Surfaces sparkling!', position: { x: 75, y: 25 } },
+          { id: 'clean-done', delay: 5900, duration: 1000, type: 'celebration', message: 'Spotless perfection!', position: { x: 50, y: 50 } }
         ];
       
       default:
@@ -136,6 +143,8 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
   useEffect(() => {
     if (!manualTriggerKey || isSeriousMode) return;
     const now = Date.now();
+    if (now - lastManualRef.current < 800) return;
+    lastManualRef.current = now;
     const extra: InteractionBeat = serviceType === 'pest'
       ? { id: `manual-pest-${now}`, delay: 0, duration: 1500, type: 'pest-retreat', message: 'Pests retreat!', position: { x: 60, y: 30 } }
       : { id: `manual-sparkle-${now}`, delay: 0, duration: 1300, type: 'sparkle-burst', message: 'Extra sparkle!', position: { x: 55, y: 45 } };
