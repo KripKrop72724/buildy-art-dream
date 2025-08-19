@@ -7,14 +7,15 @@ Welcome to the kawaii heart of BuildCare UAE! This directory contains all anime-
 ```
 public/anime/
 ├── mascots/           # Buildy mascot animation frames
-├── pests/            # Friendly pest character animations  
+├── pests/            # Friendly pest character animations
 ├── effects/          # Pool droplets and magical effects
 ├── badges/           # Trust badges and certifications
 ├── illustrations/    # Service spot illustrations
 ├── static/           # Low-motion accessibility frames
-├── lottie/           # Lottie animation JSON files
 └── README.md         # This documentation
 ```
+
+> **Note:** Lottie animation JSON files now live under `src/anime/lottie` so they can be imported as modules.
 
 ## 🎭 Character Library
 
