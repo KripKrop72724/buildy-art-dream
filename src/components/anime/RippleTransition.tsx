@@ -24,7 +24,11 @@ export const RippleTransition = ({
   const { isSeriousMode } = useSeriousMode();
   const [ripples, setRipples] = useState<Array<{ id: number; x: number; y: number }>>([]);
   const [rippleId, setRippleId] = useState(0);
+
+  const [random, setRandom] = useState<(() => number) | null>(null);
+
   const cleanupTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
 
   const sizeValues = {
     sm: { initial: 0, animate: 100 },
@@ -33,13 +37,23 @@ export const RippleTransition = ({
   };
 
   useEffect(() => {
-    if (trigger && !isSeriousMode) {
+    if (typeof window !== 'undefined') {
+      let seed = 42;
+      setRandom(() => () => {
+        const x = Math.sin(seed++) * 10000;
+        return x - Math.floor(x);
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (trigger && !isSeriousMode && random) {
       // Create multiple ripples at random positions
       const rippleCount = compact ? 2 : 3;
       const newRipples = Array.from({ length: rippleCount }, (_, i) => ({
         id: rippleId + i,
-        x: Math.random() * 100,
-        y: Math.random() * 100
+        x: random() * 100,
+        y: random() * 100
       }));
       
       setRipples(prev => [...prev, ...newRipples]);
@@ -60,7 +74,7 @@ export const RippleTransition = ({
         }
       };
     }
-  }, [trigger, isSeriousMode, rippleId, onComplete, compact]);
+  }, [trigger, isSeriousMode, rippleId, onComplete, compact, random]);
 
   useEffect(() => {
     return () => {

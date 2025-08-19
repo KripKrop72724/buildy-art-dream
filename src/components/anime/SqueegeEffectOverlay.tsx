@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useMemo } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 
@@ -19,6 +19,27 @@ export const SqueegeEffectOverlay = ({
   const [isWiping, setIsWiping] = useState(false);
   const [showSqueegee, setShowSqueegee] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const [dropletPositions, setDropletPositions] = useState<Array<{ x: number; y: number }>>([]);
+  const [sparklePositions, setSparklePositions] = useState<Array<{ left: number; top: number }>>([]);
+
+  const createSeededRandom = (seed = 42) => {
+    return () => {
+      const x = Math.sin(seed++) * 10000;
+      return x - Math.floor(x);
+    };
+  };
+
+  useEffect(() => {
+    const rand = createSeededRandom();
+    setDropletPositions(
+      Array.from({ length: 8 }, () => ({ x: rand() * 100, y: rand() * 30 }))
+    );
+    setSparklePositions(
+      Array.from({ length: 8 }, () => ({ left: rand() * 100, top: rand() * 100 }))
+    );
+  }, []);
+
   const wipeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Precompute random positions to avoid hydration mismatches
   const dropletPositions = useMemo(
@@ -38,8 +59,9 @@ export const SqueegeEffectOverlay = ({
     []
   );
 
+
   useEffect(() => {
-    if (trigger && !isSeriousMode) {
+    if (trigger && !isSeriousMode && dropletPositions.length && sparklePositions.length) {
       setIsWiping(true);
       setShowSqueegee(true);
       
@@ -57,7 +79,7 @@ export const SqueegeEffectOverlay = ({
         }
       };
     }
-  }, [trigger, isSeriousMode, onComplete]);
+  }, [trigger, isSeriousMode, onComplete, dropletPositions, sparklePositions]);
 
   useEffect(() => {
     return () => {
