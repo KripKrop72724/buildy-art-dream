@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 
@@ -25,6 +25,11 @@ export const RippleTransition = ({
   const [ripples, setRipples] = useState<Array<{ id: number; x: number; y: number }>>([]);
   const [rippleId, setRippleId] = useState(0);
 
+  const [random, setRandom] = useState<(() => number) | null>(null);
+
+  const cleanupTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+
   const sizeValues = {
     sm: { initial: 0, animate: 100 },
     md: { initial: 0, animate: 200 },
@@ -32,13 +37,23 @@ export const RippleTransition = ({
   };
 
   useEffect(() => {
-    if (trigger && !isSeriousMode) {
+    if (typeof window !== 'undefined') {
+      let seed = 42;
+      setRandom(() => () => {
+        const x = Math.sin(seed++) * 10000;
+        return x - Math.floor(x);
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (trigger && !isSeriousMode && random) {
       // Create multiple ripples at random positions
       const rippleCount = compact ? 2 : 3;
       const newRipples = Array.from({ length: rippleCount }, (_, i) => ({
         id: rippleId + i,
-        x: Math.random() * 100,
-        y: Math.random() * 100
+        x: random() * 100,
+        y: random() * 100
       }));
       
       setRipples(prev => [...prev, ...newRipples]);
@@ -46,14 +61,28 @@ export const RippleTransition = ({
 
       // Clean up ripples after animation
       const duration = compact ? 700 : 1500;
-      const timer = setTimeout(() => {
+      if (cleanupTimerRef.current) clearTimeout(cleanupTimerRef.current);
+      cleanupTimerRef.current = setTimeout(() => {
         setRipples(prev => prev.filter(r => !newRipples.some(nr => nr.id === r.id)));
         onComplete?.();
       }, duration);
 
-      return () => clearTimeout(timer);
+      return () => {
+        if (cleanupTimerRef.current) {
+          clearTimeout(cleanupTimerRef.current);
+          cleanupTimerRef.current = null;
+        }
+      };
     }
-  }, [trigger, isSeriousMode, rippleId, onComplete, compact]);
+  }, [trigger, isSeriousMode, rippleId, onComplete, compact, random]);
+
+  useEffect(() => {
+    return () => {
+      if (cleanupTimerRef.current) {
+        clearTimeout(cleanupTimerRef.current);
+      }
+    };
+  }, []);
 
   if (isSeriousMode) {
     return <div className={className}>{children}</div>;

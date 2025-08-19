@@ -53,13 +53,37 @@ export const StoryDirector: React.FC<StoryDirectorProps> = ({
   const [storyProgress, setStoryProgress] = useState(0);
   const [isStoryActive, setIsStoryActive] = useState(false);
   const [startTime, setStartTime] = useState<number | null>(null);
+
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const frameRef = useRef<number | null>(null);
+  const beatTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
 
   useEffect(() => {
     if (!isStoryActive) return;
 
+
     const start = startTime ?? Date.now();
     if (!startTime) setStartTime(start);
+    const tick = () => {
+      if (startTime) {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        setStoryProgress(progress);
+
+        if (progress >= 1) {
+          setIsStoryActive(false);
+          if (import.meta.env.DEV) {
+            console.debug('[StoryDirector] Story completed');
+          }
+          onStoryComplete?.();
+          return;
+        }
+      }
+      frameRef.current = requestAnimationFrame(tick); // schedule next frame
+    };
+
 
     intervalRef.current = setInterval(() => {
       const elapsed = Date.now() - start;
@@ -107,12 +131,19 @@ export const StoryDirector: React.FC<StoryDirectorProps> = ({
         position: { x: 50, y: 18 }
       });
 
-      const clear = setTimeout(() => {
+      if (beatTimeoutRef.current) clearTimeout(beatTimeoutRef.current);
+      beatTimeoutRef.current = setTimeout(() => {
         setCurrentBeat(cb => (cb && cb.id === id ? null : cb));
       }, 1600);
-      return () => clearTimeout(clear);
+      return () => {
+        if (beatTimeoutRef.current) {
+          clearTimeout(beatTimeoutRef.current);
+          beatTimeoutRef.current = null;
+        }
+      };
     }
   }, [storyProgress, isStoryActive]);
+
 
   const triggerBeat = useCallback(
     (beat: StoryBeat) => {
@@ -127,6 +158,20 @@ export const StoryDirector: React.FC<StoryDirectorProps> = ({
     },
     [isStoryActive, startTime]
   );
+
+  const triggerBeat = (beat: StoryBeat) => {
+    setCurrentBeat(beat);
+    if (!startTime) {
+      setStartTime(Date.now());
+    }
+    if (!isStoryActive) {
+      setIsStoryActive(true);
+      if (import.meta.env.DEV) {
+        console.debug('[StoryDirector] Story started', { beatId: beat.id });
+      }
+    }
+  };
+
 
   const setStoryActive = useCallback((active: boolean) => {
     setIsStoryActive(active);
@@ -143,6 +188,14 @@ export const StoryDirector: React.FC<StoryDirectorProps> = ({
     () => ({ currentBeat, triggerBeat, isStoryActive, setStoryActive }),
     [currentBeat, triggerBeat, isStoryActive, setStoryActive]
   );
+
+  useEffect(() => {
+    return () => {
+      if (beatTimeoutRef.current) {
+        clearTimeout(beatTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <StoryContext.Provider value={contextValue}>

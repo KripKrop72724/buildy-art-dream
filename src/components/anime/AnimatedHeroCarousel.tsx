@@ -40,11 +40,17 @@ export const AnimatedHeroCarousel: React.FC = () => {
 
   const transitionStartTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const transitionEndTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const autoAdvanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const interactionResetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     return () => {
-      if (transitionStartTimer.current) clearTimeout(transitionStartTimer.current);
-      if (transitionEndTimer.current) clearTimeout(transitionEndTimer.current);
+      [transitionStartTimer, transitionEndTimer, autoAdvanceTimer, interactionResetTimer].forEach(ref => {
+        if (ref.current) {
+          clearTimeout(ref.current);
+          ref.current = null;
+        }
+      });
     };
   }, []);
 
@@ -53,23 +59,34 @@ export const AnimatedHeroCarousel: React.FC = () => {
     if (isPaused || isSeriousMode || isTransitioning) return;
 
     const currentSlideDuration = slides[currentSlide]?.durationMs || 8000;
-    // Add extra pause time if user recently interacted
     const pauseBonus = userInteracted ? 2000 : 0;
-    
-    const timer = setTimeout(() => {
+
+    if (autoAdvanceTimer.current) clearTimeout(autoAdvanceTimer.current);
+    autoAdvanceTimer.current = setTimeout(() => {
       if (!userInteracted) {
         handleSlideTransition((currentSlide + 1) % slides.length);
       }
     }, currentSlideDuration + pauseBonus);
 
-    return () => clearTimeout(timer);
+    return () => {
+      if (autoAdvanceTimer.current) {
+        clearTimeout(autoAdvanceTimer.current);
+        autoAdvanceTimer.current = null;
+      }
+    };
   }, [currentSlide, isPaused, isSeriousMode, isTransitioning, userInteracted]);
 
   // Reset user interaction flag after a delay
   useEffect(() => {
     if (userInteracted) {
-      const timer = setTimeout(() => setUserInteracted(false), 3000);
-      return () => clearTimeout(timer);
+      if (interactionResetTimer.current) clearTimeout(interactionResetTimer.current);
+      interactionResetTimer.current = setTimeout(() => setUserInteracted(false), 3000);
+      return () => {
+        if (interactionResetTimer.current) {
+          clearTimeout(interactionResetTimer.current);
+          interactionResetTimer.current = null;
+        }
+      };
     }
   }, [userInteracted]);
 
