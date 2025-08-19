@@ -43,6 +43,7 @@ export const StoryDirector: React.FC<StoryDirectorProps> = ({
   const [isStoryActive, setIsStoryActive] = useState(false);
   const [startTime, setStartTime] = useState<number | null>(null);
   const frameRef = useRef<number | null>(null);
+  const beatTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (!isStoryActive) return;
@@ -55,7 +56,9 @@ export const StoryDirector: React.FC<StoryDirectorProps> = ({
 
         if (progress >= 1) {
           setIsStoryActive(false);
-          console.debug('[StoryDirector] Story completed');
+          if (import.meta.env.DEV) {
+            console.debug('[StoryDirector] Story completed');
+          }
           onStoryComplete?.();
           return;
         }
@@ -99,10 +102,16 @@ export const StoryDirector: React.FC<StoryDirectorProps> = ({
         position: { x: 50, y: 18 }
       });
 
-      const clear = setTimeout(() => {
+      if (beatTimeoutRef.current) clearTimeout(beatTimeoutRef.current);
+      beatTimeoutRef.current = setTimeout(() => {
         setCurrentBeat(cb => (cb && cb.id === id ? null : cb));
       }, 1600);
-      return () => clearTimeout(clear);
+      return () => {
+        if (beatTimeoutRef.current) {
+          clearTimeout(beatTimeoutRef.current);
+          beatTimeoutRef.current = null;
+        }
+      };
     }
   }, [storyProgress, isStoryActive]);
 
@@ -113,7 +122,9 @@ export const StoryDirector: React.FC<StoryDirectorProps> = ({
     }
     if (!isStoryActive) {
       setIsStoryActive(true);
-      console.debug('[StoryDirector] Story started', { beatId: beat.id });
+      if (import.meta.env.DEV) {
+        console.debug('[StoryDirector] Story started', { beatId: beat.id });
+      }
     }
   };
 
@@ -127,6 +138,14 @@ export const StoryDirector: React.FC<StoryDirectorProps> = ({
       setCurrentBeat(null);
     }
   };
+
+  useEffect(() => {
+    return () => {
+      if (beatTimeoutRef.current) {
+        clearTimeout(beatTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <StoryContext.Provider value={{

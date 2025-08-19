@@ -19,6 +19,7 @@ export const SqueegeEffectOverlay = ({
   const [isWiping, setIsWiping] = useState(false);
   const [showSqueegee, setShowSqueegee] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
   const [dropletPositions, setDropletPositions] = useState<Array<{ x: number; y: number }>>([]);
   const [sparklePositions, setSparklePositions] = useState<Array<{ left: number; top: number }>>([]);
 
@@ -39,20 +40,54 @@ export const SqueegeEffectOverlay = ({
     );
   }, []);
 
+  const wipeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Precompute random positions to avoid hydration mismatches
+  const dropletPositions = useMemo(
+    () =>
+      Array.from({ length: 8 }, () => ({
+        x: Math.random() * 100,
+        y: Math.random() * 30
+      })),
+    []
+  );
+  const sparklePositions = useMemo(
+    () =>
+      Array.from({ length: 8 }, () => ({
+        left: Math.random() * 100,
+        top: Math.random() * 100
+      })),
+    []
+  );
+
+
   useEffect(() => {
     if (trigger && !isSeriousMode && dropletPositions.length && sparklePositions.length) {
       setIsWiping(true);
       setShowSqueegee(true);
       
-      const timer = setTimeout(() => {
+      if (wipeTimerRef.current) clearTimeout(wipeTimerRef.current);
+      wipeTimerRef.current = setTimeout(() => {
         setIsWiping(false);
         setShowSqueegee(false);
         onComplete?.();
       }, 2000);
 
-      return () => clearTimeout(timer);
+      return () => {
+        if (wipeTimerRef.current) {
+          clearTimeout(wipeTimerRef.current);
+          wipeTimerRef.current = null;
+        }
+      };
     }
   }, [trigger, isSeriousMode, onComplete, dropletPositions, sparklePositions]);
+
+  useEffect(() => {
+    return () => {
+      if (wipeTimerRef.current) {
+        clearTimeout(wipeTimerRef.current);
+      }
+    };
+  }, []);
 
   if (isSeriousMode) {
     return <div className={className}>{children}</div>;

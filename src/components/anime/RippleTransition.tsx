@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 
@@ -24,7 +24,11 @@ export const RippleTransition = ({
   const { isSeriousMode } = useSeriousMode();
   const [ripples, setRipples] = useState<Array<{ id: number; x: number; y: number }>>([]);
   const [rippleId, setRippleId] = useState(0);
+
   const [random, setRandom] = useState<(() => number) | null>(null);
+
+  const cleanupTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
 
   const sizeValues = {
     sm: { initial: 0, animate: 100 },
@@ -57,14 +61,28 @@ export const RippleTransition = ({
 
       // Clean up ripples after animation
       const duration = compact ? 700 : 1500;
-      const timer = setTimeout(() => {
+      if (cleanupTimerRef.current) clearTimeout(cleanupTimerRef.current);
+      cleanupTimerRef.current = setTimeout(() => {
         setRipples(prev => prev.filter(r => !newRipples.some(nr => nr.id === r.id)));
         onComplete?.();
       }, duration);
 
-      return () => clearTimeout(timer);
+      return () => {
+        if (cleanupTimerRef.current) {
+          clearTimeout(cleanupTimerRef.current);
+          cleanupTimerRef.current = null;
+        }
+      };
     }
   }, [trigger, isSeriousMode, rippleId, onComplete, compact, random]);
+
+  useEffect(() => {
+    return () => {
+      if (cleanupTimerRef.current) {
+        clearTimeout(cleanupTimerRef.current);
+      }
+    };
+  }, []);
 
   if (isSeriousMode) {
     return <div className={className}>{children}</div>;
