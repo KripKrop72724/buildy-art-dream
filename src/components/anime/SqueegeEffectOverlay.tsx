@@ -41,23 +41,6 @@ export const SqueegeEffectOverlay = ({
   }, []);
 
   const wipeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  // Precompute random positions to avoid hydration mismatches
-  const dropletPositions = useMemo(
-    () =>
-      Array.from({ length: 8 }, () => ({
-        x: Math.random() * 100,
-        y: Math.random() * 30
-      })),
-    []
-  );
-  const sparklePositions = useMemo(
-    () =>
-      Array.from({ length: 8 }, () => ({
-        left: Math.random() * 100,
-        top: Math.random() * 100
-      })),
-    []
-  );
 
 
   useEffect(() => {
