@@ -32,7 +32,6 @@ export const HeroSlide: React.FC<HeroSlideProps> = ({ data }) => {
   const { isSeriousMode } = useSeriousMode();
   const { t } = useTranslation();
   const [storyActive, setStoryActive] = useState(false);
-  const [interactionPhase, setInteractionPhase] = useState(0);
   const [manualTriggerKey, setManualTriggerKey] = useState(0);
 
   useEffect(() => {
@@ -44,7 +43,6 @@ export const HeroSlide: React.FC<HeroSlideProps> = ({ data }) => {
     return () => {
       clearTimeout(timer);
       setStoryActive(false);
-      setInteractionPhase(0);
     };
   }, [data.service]);
 
@@ -81,8 +79,6 @@ export const HeroSlide: React.FC<HeroSlideProps> = ({ data }) => {
   ];
 
   const renderMicroInteraction = () => {
-    if (isSeriousMode) return null;
-    
     switch (data.animationType) {
       case 'squeegee':
         return (
@@ -332,7 +328,6 @@ export const HeroSlide: React.FC<HeroSlideProps> = ({ data }) => {
               <MicroInteractionOrchestrator
                 serviceType={data.service}
                 isActive={storyActive}
-                onComplete={() => setInteractionPhase(prev => prev + 1)}
                 manualTriggerKey={manualTriggerKey}
               />
               
