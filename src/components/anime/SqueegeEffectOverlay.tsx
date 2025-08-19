@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 
@@ -19,6 +19,23 @@ export const SqueegeEffectOverlay = ({
   const [isWiping, setIsWiping] = useState(false);
   const [showSqueegee, setShowSqueegee] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  // Precompute random positions to avoid hydration mismatches
+  const dropletPositions = useMemo(
+    () =>
+      Array.from({ length: 8 }, () => ({
+        x: Math.random() * 100,
+        y: Math.random() * 30
+      })),
+    []
+  );
+  const sparklePositions = useMemo(
+    () =>
+      Array.from({ length: 8 }, () => ({
+        left: Math.random() * 100,
+        top: Math.random() * 100
+      })),
+    []
+  );
 
   useEffect(() => {
     if (trigger && !isSeriousMode) {
@@ -79,16 +96,16 @@ export const SqueegeEffectOverlay = ({
       <AnimatePresence>
         {isWiping && (
           <div className="absolute inset-0 pointer-events-none z-10">
-            {[...Array(8)].map((_, i) => (
+            {dropletPositions.map(({ x, y }, i) => (
               <motion.div
                 key={i}
                 className="absolute w-3 h-3 bg-blue-400/60 rounded-full"
-                initial={{ 
-                  x: Math.random() * 100 + '%',
-                  y: Math.random() * 30 + '%',
+                initial={{
+                  x: x + '%',
+                  y: y + '%',
                   scale: 0
                 }}
-                animate={{ 
+                animate={{
                   scale: [0, 1, 0],
                   y: '+=100px',
                   rotate: 360
@@ -120,16 +137,16 @@ export const SqueegeEffectOverlay = ({
       <AnimatePresence>
         {isWiping && (
           <div className="absolute inset-0 pointer-events-none z-30">
-            {[...Array(8)].map((_, i) => (
+            {sparklePositions.map(({ left, top }, i) => (
               <motion.div
                 key={`sparkle-${i}`}
                 className="absolute text-yellow-400 text-xl"
                 style={{
-                  left: Math.random() * 100 + '%',
-                  top: Math.random() * 100 + '%'
+                  left: left + '%',
+                  top: top + '%'
                 }}
                 initial={{ scale: 0, rotate: 0 }}
-                animate={{ 
+                animate={{
                   scale: [0, 1, 0],
                   rotate: 360
                 }}
