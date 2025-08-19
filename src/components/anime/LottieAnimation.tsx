@@ -60,6 +60,9 @@ export const LottieAnimation = ({
   const [isPlaying, setIsPlaying] = useState(autoplay);
   const [isInView, setIsInView] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const lottieRef = useRef<any>(null);
+  const loadedRef = useRef(false);
+  const watchdogRef = useRef<ReturnType<typeof window.setTimeout> | null>(null);
   const lottieRef = useRef<unknown>(null);
 
   // Size classes
@@ -82,6 +85,21 @@ export const LottieAnimation = ({
       try {
         const data = await getAnimation(animationPath);
         if (cancelled) return;
+        
+        if (!ok) {
+          console.warn('Lottie assets failed to load, using static fallback:', animationPath);
+          setUseFallback(true);
+          setAnimationData(null);
+          return;
+        }
+        if (import.meta.env.DEV) {
+          console.debug('Lottie loaded:', animationPath);
+        }
+        loadedRef.current = true;
+        if (useFallback && import.meta.env.DEV) {
+          console.debug('Lottie recovered from fallback', animationPath);
+        }
+
         setUseFallback(false);
         setAnimationData(data);
       } catch (error) {
@@ -92,9 +110,25 @@ export const LottieAnimation = ({
       }
     };
 
+
+    if (watchdogRef.current) window.clearTimeout(watchdogRef.current);
+    watchdogRef.current = window.setTimeout(() => {
+      if (!cancelled && !loadedRef.current) {
+        console.warn('Lottie timed out, using fallback:', animationPath);
+        setUseFallback(true);
+      }
+    }, 3500);
+
+
     load();
     return () => {
       cancelled = true;
+
+      if (watchdogRef.current) {
+        window.clearTimeout(watchdogRef.current);
+        watchdogRef.current = null;
+      }
+
     };
   }, [animationPath, isSeriousMode]);
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { RippleTransition } from './RippleTransition';
 
@@ -15,6 +15,20 @@ export const NarrativeBridge: React.FC<NarrativeBridgeProps> = ({
   toService,
   onComplete
 }) => {
+  const completionRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const scheduleComplete = (delay: number) => {
+    if (completionRef.current) clearTimeout(completionRef.current);
+    completionRef.current = setTimeout(onComplete, delay);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (completionRef.current) {
+        clearTimeout(completionRef.current);
+      }
+    };
+  }, []);
   const getBridgeEffect = () => {
     const transitionKey = `${fromService}-${toService}`;
     
@@ -27,7 +41,7 @@ export const NarrativeBridge: React.FC<NarrativeBridgeProps> = ({
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
             className="absolute inset-0 z-20 flex items-center justify-center bg-gradient-to-r from-blue-500/20 to-red-500/20"
-            onAnimationComplete={() => setTimeout(onComplete, 600)}
+            onAnimationComplete={() => scheduleComplete(600)}
           >
             <div className="text-2xl font-bold text-white drop-shadow-lg">
               From Pool to Pest Protection! 🏊‍♂️➡️🐛
@@ -43,7 +57,7 @@ export const NarrativeBridge: React.FC<NarrativeBridgeProps> = ({
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: 100, opacity: 0 }}
             className="absolute inset-0 z-20 flex items-center justify-center bg-gradient-to-r from-red-500/20 to-green-500/20"
-            onAnimationComplete={() => setTimeout(onComplete, 600)}
+            onAnimationComplete={() => scheduleComplete(600)}
           >
             <div className="text-2xl font-bold text-white drop-shadow-lg">
               Now for Deep Cleaning! 🐛➡️✨
@@ -56,7 +70,7 @@ export const NarrativeBridge: React.FC<NarrativeBridgeProps> = ({
           <RippleTransition
             trigger={true}
             color="hsl(var(--primary))"
-            onComplete={() => setTimeout(onComplete, 600)}
+            onComplete={() => scheduleComplete(600)}
           >
             <motion.div
               key="clean-to-pool"
@@ -80,7 +94,7 @@ export const NarrativeBridge: React.FC<NarrativeBridgeProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="absolute inset-0 z-20 bg-primary/10"
-            onAnimationComplete={() => setTimeout(onComplete, 300)}
+            onAnimationComplete={() => scheduleComplete(300)}
           />
         );
     }
