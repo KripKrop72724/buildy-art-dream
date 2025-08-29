@@ -12,21 +12,21 @@ const slides: HeroSlideData[] = [
     service: 'pool',
     animationType: 'squeegee',
     animationPath: '/anime/lottie/buildy-idle-wave.json',
-    fallbackImage: '/anime/illustrations/pool-service-scene.png',
+    fallbackImage: '/anime/static/buildy-static.png',
     durationMs: 8000
   },
   {
     service: 'pest',
     animationType: 'pest-retreat',
     animationPath: '/anime/lottie/pest-retreat.json',
-    fallbackImage: '/anime/illustrations/pest-control-scene.png',
+    fallbackImage: '/anime/static/pest-static.png',
     durationMs: 8000
   },
   {
     service: 'deepClean',
     animationType: 'sparkle-burst',
     animationPath: '/anime/lottie/droplet-hop.json',
-    fallbackImage: '/anime/illustrations/deep-cleaning-scene.png',
+    fallbackImage: '/anime/static/buildy-static.png',
     durationMs: 8000
   }
 ];

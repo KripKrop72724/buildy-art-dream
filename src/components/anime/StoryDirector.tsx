@@ -42,18 +42,12 @@ interface StoryDirectorProps {
   children: ReactNode;
   duration: number;
   onStoryComplete?: () => void;
-  serviceLabels?: {
-    intro: string;
-    action: string;
-    payoff: string;
-  };
 }
 
 export const StoryDirector: React.FC<StoryDirectorProps> = ({
   children,
   duration,
-  onStoryComplete,
-  serviceLabels
+  onStoryComplete
 }) => {
   const [currentBeat, setCurrentBeat] = useState<StoryBeat | null>(null);
   const [storyProgress, setStoryProgress] = useState(0);
@@ -123,12 +117,11 @@ export const StoryDirector: React.FC<StoryDirectorProps> = ({
     if (phase && (currentBeat?.id?.startsWith('auto-') ? !currentBeat : true)) {
       // Avoid spamming same phase twice in a row
       const id = `auto-${phase}-${Date.now()}`;
-      const defaultLabels = {
-        intro: 'Analyzing surfaces…',
-        action: 'Treatment in progress…',
-        payoff: 'Mission accomplished!'
-      };
-      const contentMap = serviceLabels || defaultLabels;
+      const contentMap = {
+        intro: 'Assessing surfaces…',
+        action: 'Deep cleaning in progress…',
+        payoff: 'Spotless perfection!'
+      } as const;
 
       setCurrentBeat({
         id,
