@@ -52,7 +52,7 @@ const resources = {
             benefit1: 'Professional deep cleaning',
             benefit2: 'Chemical balancing and testing',
             benefit3: 'Equipment maintenance and repairs',
-            badge: 'Pool Perfected!'
+            badge: 'Pool Perfected! 🏊‍♂️'
           },
           pest: {
             title: 'Gentle Pest Solutions That Work',
@@ -61,7 +61,7 @@ const resources = {
             storyCaption: 'See how we make pests retreat while keeping your family safe',
             benefits: ['Family-safe treatments', 'Pet-friendly', 'Follow-up visits', 'Warranty included'],
             primaryCta: 'Book Free Pest Inspection',
-            badge: 'Mission Accomplished!',
+            badge: 'Mission Accomplished! 🛡️',
             benefit1: 'Family-safe treatment methods',
             benefit2: '24/7 pest monitoring',
             benefit3: '100% satisfaction guarantee'
@@ -73,7 +73,7 @@ const resources = {
             storyCaption: 'Experience the magical transformation of deep cleaning excellence',
             benefits: ['Eco-friendly products', 'Post-clean inspection', 'Satisfaction guarantee', 'Room-by-room care'],
             primaryCta: 'Book Free Cleaning Quote',
-            badge: 'Spotless Perfection!',
+            badge: 'Spotless Perfection! 🌟',
             benefit1: 'Professional grade equipment',
             benefit2: 'Eco-friendly cleaning products',
             benefit3: 'Detailed cleaning checklist'
@@ -157,7 +157,7 @@ const resources = {
             benefit1: 'تنظيف عميق احترافي',
             benefit2: 'توازن المواد الكيميائية والاختبار',
             benefit3: 'صيانة وإصلاح المعدات',
-            badge: 'مسبح مثالي!'
+            badge: 'مسبح مثالي! 🏊‍♂️'
           },
           pest: {
             title: 'حلول لطيفة ضد الآفات تعمل بفعالية',
@@ -166,7 +166,7 @@ const resources = {
             storyCaption: 'شاهد كيف نجعل الآفات تتراجع مع الحفاظ على سلامة عائلتك',
             benefits: ['علاجات آمنة للعائلة', 'صديقة للحيوانات الأليفة', 'زيارات متابعة', 'ضمان مشمول'],
             primaryCta: 'احجز فحص آفات مجاني',
-            badge: 'تمت المهمة!',
+            badge: 'تمت المهمة! 🛡️',
             benefit1: 'طرق علاج آمنة للعائلة',
             benefit2: 'مراقبة الآفات على مدار الساعة',
             benefit3: 'ضمان الرضا 100%'
@@ -178,7 +178,7 @@ const resources = {
             storyCaption: 'اختبر التحول السحري لتميز التنظيف العميق',
             benefits: ['منتجات صديقة للبيئة', 'فحص ما بعد التنظيف', 'ضمان الرضا', 'العناية غرفة بغرفة'],
             primaryCta: 'احجز عرض تنظيف مجاني',
-            badge: 'مثالية بلا عيوب!',
+            badge: 'مثالية بلا عيوب! 🌟',
             benefit1: 'معدات احترافية',
             benefit2: 'منتجات تنظيف صديقة للبيئة',
             benefit3: 'قائمة تنظيف مفصلة'

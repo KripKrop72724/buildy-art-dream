@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Briefcase } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '../ui/button';
 import { HeroSlide, type HeroSlideData } from './HeroSlide';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
@@ -230,12 +230,12 @@ export const AnimatedHeroCarousel: React.FC = () => {
           </div>
           {isSeriousMode && (
             <motion.div
-              className="bg-muted/90 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-medium text-muted-foreground border flex items-center gap-1"
+              className="bg-muted/90 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-medium text-muted-foreground border"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
             >
-              <Briefcase className="h-3 w-3" /> Professional Mode
+              💼 Professional Mode
             </motion.div>
           )}
         </div>

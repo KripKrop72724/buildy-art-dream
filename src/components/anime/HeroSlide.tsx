@@ -8,7 +8,6 @@ import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useTranslation } from 'react-i18next';
 import { StoryDirector, useStory } from './StoryDirector';
 import { MicroInteractionOrchestrator } from './MicroInteractionOrchestrator';
-import { SafeImage } from '@/components/ui/safe-image';
 
 export interface HeroSlideData {
   service: 'pool' | 'pest' | 'deepClean';
@@ -36,9 +35,6 @@ export const HeroSlide: React.FC<HeroSlideProps> = ({ data }) => {
   const [manualTriggerKey, setManualTriggerKey] = useState(0);
   const introTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastClickRef = useRef(0);
-
-  const resolveAsset = (path: string) =>
-    `${import.meta.env.BASE_URL.replace(/\/$/, '')}/${path.replace(/^\//, '')}`;
 
   useEffect(() => {
     // Start story sequence when slide mounts
@@ -128,23 +124,23 @@ export const HeroSlide: React.FC<HeroSlideProps> = ({ data }) => {
             />
             {/* Animated pest retreat */}
             <motion.div
-              className="absolute w-8 h-8"
+              className="absolute text-2xl"
               style={{ left: '80%', top: '20%' }}
               initial={{ x: 0, rotate: 0, scale: 1 }}
               animate={{ x: -100, rotate: 45, scale: 0.7 }}
               transition={{ delay: 3.0, duration: 2.0, ease: "easeOut" }}
             >
-              <SafeImage src={resolveAsset('/anime/pests/pest-retreat-01.png')} alt="pest" className="w-8 h-8" />
+              🐛💨
             </motion.div>
             {/* White flag surrender */}
             <motion.div
-              className="absolute w-6 h-6"
+              className="absolute text-xl"
               style={{ left: '70%', top: '30%' }}
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 4.0, duration: 0.5 }}
             >
-              <SafeImage src={resolveAsset('/anime/pests/pest-white-flag.png')} alt="flag" className="w-6 h-6" />
+              🏳️
             </motion.div>
             {/* Mission accomplished badge */}
             <motion.div
@@ -166,10 +162,10 @@ export const HeroSlide: React.FC<HeroSlideProps> = ({ data }) => {
             {getSparklePositions().map((pos, i) => (
               <motion.div
                 key={i}
-                className="absolute will-change-transform w-5 h-5"
+                className="absolute text-2xl will-change-transform"
                 style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
                 initial={{ scale: 0, rotate: 0, opacity: 0 }}
-                animate={{
+                animate={{ 
                   scale: [0, 1.2, 0],
                   rotate: [0, 180, 360],
                   opacity: [0, 1, 0]
@@ -180,7 +176,7 @@ export const HeroSlide: React.FC<HeroSlideProps> = ({ data }) => {
                   ease: "easeOut"
                 }}
               >
-                <SafeImage src={resolveAsset('/anime/effects/droplet-hop-01.png')} alt="sparkle" className="w-5 h-5" />
+                ✨
               </motion.div>
             ))}
             {/* Bubble effects */}
