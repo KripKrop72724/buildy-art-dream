@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '../ui/button';
 import { LottieAnimation } from './LottieAnimation';
@@ -32,21 +32,19 @@ export const HeroSlide: React.FC<HeroSlideProps> = ({ data }) => {
   const { isSeriousMode } = useSeriousMode();
   const { t } = useTranslation();
   const [storyActive, setStoryActive] = useState(false);
+  const [interactionPhase, setInteractionPhase] = useState(0);
   const [manualTriggerKey, setManualTriggerKey] = useState(0);
-  const introTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     // Start story sequence when slide mounts
-    introTimerRef.current = setTimeout(() => {
+    const timer = setTimeout(() => {
       setStoryActive(true);
     }, 500);
 
     return () => {
-      if (introTimerRef.current) {
-        clearTimeout(introTimerRef.current);
-        introTimerRef.current = null;
-      }
+      clearTimeout(timer);
       setStoryActive(false);
+      setInteractionPhase(0);
     };
   }, [data.service]);
 
@@ -83,6 +81,8 @@ export const HeroSlide: React.FC<HeroSlideProps> = ({ data }) => {
   ];
 
   const renderMicroInteraction = () => {
+    if (isSeriousMode) return null;
+    
     switch (data.animationType) {
       case 'squeegee':
         return (
@@ -332,6 +332,7 @@ export const HeroSlide: React.FC<HeroSlideProps> = ({ data }) => {
               <MicroInteractionOrchestrator
                 serviceType={data.service}
                 isActive={storyActive}
+                onComplete={() => setInteractionPhase(prev => prev + 1)}
                 manualTriggerKey={manualTriggerKey}
               />
               

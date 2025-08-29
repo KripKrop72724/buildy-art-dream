@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Lottie from 'lottie-react';
 
@@ -24,7 +24,6 @@ export const BuildyMascot = ({
   const [currentFrame, setCurrentFrame] = useState(0);
   const [isPlaying, setIsPlaying] = useState(autoplay);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Check for reduced motion preference
   useEffect(() => {
@@ -84,8 +83,7 @@ export const BuildyMascot = ({
     const duration = getAnimationDuration();
     const interval = duration / frames.length;
 
-    if (intervalRef.current) clearInterval(intervalRef.current);
-    intervalRef.current = setInterval(() => {
+    const timer = setInterval(() => {
       setCurrentFrame(prev => {
         const nextFrame = (prev + 1) % frames.length;
         if (nextFrame === 0 && !loop) {
@@ -96,21 +94,8 @@ export const BuildyMascot = ({
       });
     }, interval);
 
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    };
+    return () => clearInterval(timer);
   }, [animation, loop, isPlaying, prefersReducedMotion, onComplete]);
-
-  useEffect(() => {
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, []);
 
   // Lottie animation data (simplified - would be imported from JSON files)
   const lottieAnimations = {
@@ -202,3 +187,30 @@ export const WalkingBuildyMascot = (props: Omit<BuildyMascotProps, 'animation'>)
 export const CleaningBuildyMascot = (props: Omit<BuildyMascotProps, 'animation'>) => (
   <BuildyMascot {...props} animation="clean" />
 );
+
+// Hook for mascot animations
+export const useBuildyMascot = () => {
+  const [animation, setAnimation] = useState<BuildyMascotProps['animation']>('idle');
+  const [isPlaying, setIsPlaying] = useState(true);
+
+  const play = (newAnimation?: BuildyMascotProps['animation']) => {
+    if (newAnimation) setAnimation(newAnimation);
+    setIsPlaying(true);
+  };
+
+  const pause = () => setIsPlaying(false);
+  
+  const reset = () => {
+    setAnimation('idle');
+    setIsPlaying(true);
+  };
+
+  return {
+    animation,
+    isPlaying,
+    play,
+    pause,
+    reset,
+    setAnimation
+  };
+};

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import Lottie, { LottieRefCurrentProps } from 'lottie-react';
+import Lottie from 'lottie-react';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { SafeImage } from '@/components/ui/safe-image';
 
@@ -16,33 +16,6 @@ interface LottieAnimationProps {
   maxSize?: number;
 }
 
-// Module-level cache so animations are loaded once per session
-const rawAnimationModules = import.meta.glob('/public/anime/**/*.json', {
-  import: 'default'
-});
-
-const animationModules: Record<string, () => Promise<unknown>> = {};
-Object.keys(rawAnimationModules).forEach((key) => {
-  // Drop the `/public` prefix so callers can use paths like `/anime/foo.json`
-  animationModules[key.replace(/^\/public/, '')] = rawAnimationModules[key];
-});
-
-const animationCache: Record<string, Promise<unknown>> = {};
-
-const getAnimation = async (path: string): Promise<unknown> => {
-  if (!animationCache[path]) {
-    const importer = animationModules[path];
-    if (!importer) {
-      return Promise.reject(new Error(`Animation not found: ${path}`));
-    }
-    animationCache[path] = importer().then((m: unknown) => (m as { default?: unknown }).default ?? m);
-    animationCache[path].catch(() => {
-      delete animationCache[path];
-    });
-  }
-  return animationCache[path];
-};
-
 export const LottieAnimation = ({
   animationPath,
   fallbackImage,
@@ -55,14 +28,13 @@ export const LottieAnimation = ({
   maxSize = 600
 }: LottieAnimationProps) => {
   const { isSeriousMode } = useSeriousMode();
-  const [animationData, setAnimationData] = useState<unknown>(null);
+  const [animationData, setAnimationData] = useState(null);
   const [useFallback, setUseFallback] = useState(false);
   const [isPlaying, setIsPlaying] = useState(autoplay);
   const [isInView, setIsInView] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const lottieRef = useRef<LottieRefCurrentProps>(null);
+  const lottieRef = useRef<any>(null);
   const loadedRef = useRef(false);
-  const watchdogRef = useRef<number | null>(null);
 
   // Size classes
   const sizeClasses = {
@@ -74,53 +46,93 @@ export const LottieAnimation = ({
 
   const maxSizeStyle = maxSize ? { maxWidth: `${maxSize}px`, maxHeight: `${maxSize}px` } : {};
 
-  // Load Lottie animation data using dynamic import
+  // Load Lottie animation data with asset normalization and preloading
   useEffect(() => {
     if (isSeriousMode) return;
+
     let cancelled = false;
+    loadedRef.current = false;
     setUseFallback(false);
+
+    const baseFromPath = () => {
+      if (animationPath.includes('buildy-idle-wave')) return '/anime/mascots/';
+      if (animationPath.includes('pest')) return '/anime/pests/';
+      if (animationPath.includes('droplet')) return '/anime/effects/';
+      return '/anime/';
+    };
+
+    const normalize = (data: any) => {
+      const cloned = { ...data, assets: Array.isArray(data.assets) ? data.assets.map((a: any) => ({ ...a })) : [] };
+      const base = baseFromPath();
+      cloned.assets?.forEach((a: any) => {
+        if (a.p && !/^https?:\/\//.test(a.p)) {
+          const url = a.p.startsWith('/') ? a.p : `${base}${a.p}`;
+          a.u = '';
+          a.p = url;
+        }
+      });
+      return cloned;
+    };
+
+    const preloadAssets = async (assets: any[]) => {
+      if (!assets?.length) return true;
+      const results = await Promise.all(
+        assets
+          .filter((a) => a.p)
+          .map(
+            (a: any) =>
+              new Promise<boolean>((resolve) => {
+                const img = new Image();
+                img.onload = () => resolve(true);
+                img.onerror = () => resolve(false);
+                img.src = a.p;
+              })
+          )
+      );
+      return results.every(Boolean);
+    };
 
     const load = async () => {
       try {
-        const data = await getAnimation(animationPath);
+        const response = await fetch(animationPath);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const raw = await response.json();
+        const normalized = normalize(raw);
+        const ok = await preloadAssets(normalized.assets || []);
         if (cancelled) return;
-        
-        console.log('✅ Lottie animation loaded successfully:', animationPath);
-        loadedRef.current = true;
-        
-        if (useFallback) {
-          console.log('🔄 Lottie recovered from fallback state:', animationPath);
+        if (!ok) {
+          console.warn('Lottie assets failed to load, using static fallback:', animationPath);
+          setUseFallback(true);
+          setAnimationData(null);
+          return;
         }
-
+        console.debug('Lottie loaded:', animationPath);
+        loadedRef.current = true;
+        if (useFallback) {
+          console.debug('Lottie recovered from fallback', animationPath);
+        }
         setUseFallback(false);
-        setAnimationData(data);
+        setAnimationData(normalized);
       } catch (error) {
         if (cancelled) return;
-        console.error('❌ Failed to load Lottie animation:', animationPath, error);
+        console.warn(`Failed to load Lottie animation: ${animationPath}`, error);
         setUseFallback(true);
         setAnimationData(null);
       }
     };
 
-
-    if (watchdogRef.current) window.clearTimeout(watchdogRef.current);
-    watchdogRef.current = window.setTimeout(() => {
+    const watchdog = window.setTimeout(() => {
       if (!cancelled && !loadedRef.current) {
-        console.warn('Lottie watchdog timeout - falling back to static image:', animationPath);
+        console.warn('Lottie timed out, using fallback:', animationPath);
         setUseFallback(true);
       }
-    }, 5000);
-
+    }, 3500);
 
     load();
+
     return () => {
       cancelled = true;
-
-      if (watchdogRef.current) {
-        window.clearTimeout(watchdogRef.current);
-        watchdogRef.current = null;
-      }
-
+      window.clearTimeout(watchdog);
     };
   }, [animationPath, isSeriousMode]);
 
@@ -259,9 +271,9 @@ export const DeepCleaningLottie = (props: Omit<LottieAnimationProps, 'animationP
 // Preload helper for warming up next slide assets
 export const preloadLottieAssets = async (animationPath: string, fallbackImage?: string) => {
   try {
-    // Preload Lottie JSON by importing it
-    await getAnimation(animationPath);
-
+    // Preload Lottie JSON
+    await fetch(animationPath);
+    
     // Preload fallback image
     if (fallbackImage) {
       const img = new Image();

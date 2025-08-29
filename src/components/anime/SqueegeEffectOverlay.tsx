@@ -20,57 +20,20 @@ export const SqueegeEffectOverlay = ({
   const [showSqueegee, setShowSqueegee] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const [dropletPositions, setDropletPositions] = useState<Array<{ x: number; y: number }>>([]);
-  const [sparklePositions, setSparklePositions] = useState<Array<{ left: number; top: number }>>([]);
-
-  const createSeededRandom = (seed = 42) => {
-    return () => {
-      const x = Math.sin(seed++) * 10000;
-      return x - Math.floor(x);
-    };
-  };
-
   useEffect(() => {
-    const rand = createSeededRandom();
-    setDropletPositions(
-      Array.from({ length: 8 }, () => ({ x: rand() * 100, y: rand() * 30 }))
-    );
-    setSparklePositions(
-      Array.from({ length: 8 }, () => ({ left: rand() * 100, top: rand() * 100 }))
-    );
-  }, []);
-
-  const wipeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-
-  useEffect(() => {
-    if (trigger && !isSeriousMode && dropletPositions.length && sparklePositions.length) {
+    if (trigger && !isSeriousMode) {
       setIsWiping(true);
       setShowSqueegee(true);
       
-      if (wipeTimerRef.current) clearTimeout(wipeTimerRef.current);
-      wipeTimerRef.current = setTimeout(() => {
+      const timer = setTimeout(() => {
         setIsWiping(false);
         setShowSqueegee(false);
         onComplete?.();
       }, 2000);
 
-      return () => {
-        if (wipeTimerRef.current) {
-          clearTimeout(wipeTimerRef.current);
-          wipeTimerRef.current = null;
-        }
-      };
+      return () => clearTimeout(timer);
     }
-  }, [trigger, isSeriousMode, onComplete, dropletPositions, sparklePositions]);
-
-  useEffect(() => {
-    return () => {
-      if (wipeTimerRef.current) {
-        clearTimeout(wipeTimerRef.current);
-      }
-    };
-  }, []);
+  }, [trigger, isSeriousMode, onComplete]);
 
   if (isSeriousMode) {
     return <div className={className}>{children}</div>;
@@ -116,16 +79,16 @@ export const SqueegeEffectOverlay = ({
       <AnimatePresence>
         {isWiping && (
           <div className="absolute inset-0 pointer-events-none z-10">
-            {dropletPositions.map(({ x, y }, i) => (
+            {[...Array(8)].map((_, i) => (
               <motion.div
                 key={i}
                 className="absolute w-3 h-3 bg-blue-400/60 rounded-full"
-                initial={{
-                  x: x + '%',
-                  y: y + '%',
+                initial={{ 
+                  x: Math.random() * 100 + '%',
+                  y: Math.random() * 30 + '%',
                   scale: 0
                 }}
-                animate={{
+                animate={{ 
                   scale: [0, 1, 0],
                   y: '+=100px',
                   rotate: 360
@@ -157,16 +120,16 @@ export const SqueegeEffectOverlay = ({
       <AnimatePresence>
         {isWiping && (
           <div className="absolute inset-0 pointer-events-none z-30">
-            {sparklePositions.map(({ left, top }, i) => (
+            {[...Array(8)].map((_, i) => (
               <motion.div
                 key={`sparkle-${i}`}
                 className="absolute text-yellow-400 text-xl"
                 style={{
-                  left: left + '%',
-                  top: top + '%'
+                  left: Math.random() * 100 + '%',
+                  top: Math.random() * 100 + '%'
                 }}
                 initial={{ scale: 0, rotate: 0 }}
-                animate={{
+                animate={{ 
                   scale: [0, 1, 0],
                   rotate: 360
                 }}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '../ui/button';
@@ -38,55 +38,28 @@ export const AnimatedHeroCarousel: React.FC = () => {
   const [userInteracted, setUserInteracted] = useState(false);
   const { isSeriousMode } = useSeriousMode();
 
-  const transitionStartTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const transitionEndTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const autoAdvanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const interactionResetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    return () => {
-      [transitionStartTimer, transitionEndTimer, autoAdvanceTimer, interactionResetTimer].forEach(ref => {
-        if (ref.current) {
-          clearTimeout(ref.current);
-          ref.current = null;
-        }
-      });
-    };
-  }, []);
-
   // Auto-advance slides based on their duration
   useEffect(() => {
     if (isPaused || isSeriousMode || isTransitioning) return;
 
     const currentSlideDuration = slides[currentSlide]?.durationMs || 8000;
+    // Add extra pause time if user recently interacted
     const pauseBonus = userInteracted ? 2000 : 0;
-
-    if (autoAdvanceTimer.current) clearTimeout(autoAdvanceTimer.current);
-    autoAdvanceTimer.current = setTimeout(() => {
+    
+    const timer = setTimeout(() => {
       if (!userInteracted) {
         handleSlideTransition((currentSlide + 1) % slides.length);
       }
     }, currentSlideDuration + pauseBonus);
 
-    return () => {
-      if (autoAdvanceTimer.current) {
-        clearTimeout(autoAdvanceTimer.current);
-        autoAdvanceTimer.current = null;
-      }
-    };
+    return () => clearTimeout(timer);
   }, [currentSlide, isPaused, isSeriousMode, isTransitioning, userInteracted]);
 
   // Reset user interaction flag after a delay
   useEffect(() => {
     if (userInteracted) {
-      if (interactionResetTimer.current) clearTimeout(interactionResetTimer.current);
-      interactionResetTimer.current = setTimeout(() => setUserInteracted(false), 3000);
-      return () => {
-        if (interactionResetTimer.current) {
-          clearTimeout(interactionResetTimer.current);
-          interactionResetTimer.current = null;
-        }
-      };
+      const timer = setTimeout(() => setUserInteracted(false), 3000);
+      return () => clearTimeout(timer);
     }
   }, [userInteracted]);
 
@@ -103,20 +76,10 @@ export const AnimatedHeroCarousel: React.FC = () => {
   const handleSlideTransition = (targetIndex: number) => {
     if (targetIndex !== currentSlide && !isTransitioning) {
       setIsTransitioning(true);
-
-      if (transitionStartTimer.current) {
-        clearTimeout(transitionStartTimer.current);
-        transitionStartTimer.current = null;
-      }
-      if (transitionEndTimer.current) {
-        clearTimeout(transitionEndTimer.current);
-        transitionEndTimer.current = null;
-      }
-
       // Brief delay before changing slide to show transition effect
-      transitionStartTimer.current = setTimeout(() => {
+      setTimeout(() => {
         setCurrentSlide(targetIndex);
-        transitionEndTimer.current = setTimeout(() => setIsTransitioning(false), 600);
+        setTimeout(() => setIsTransitioning(false), 600);
       }, 300);
     }
   };

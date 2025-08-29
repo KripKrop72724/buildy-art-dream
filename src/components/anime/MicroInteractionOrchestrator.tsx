@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useStory } from './StoryDirector';
@@ -28,8 +28,6 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
   const { isSeriousMode } = useSeriousMode();
   const { triggerBeat } = useStory();
   const [activeInteractions, setActiveInteractions] = useState<InteractionBeat[]>([]);
-  const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
-  const manualTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const getServiceInteractions = (service: string): InteractionBeat[] => {
     switch (service) {
@@ -65,15 +63,11 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
     if (!isActive || isSeriousMode) return;
 
     const interactions = getServiceInteractions(serviceType);
-    // clear any existing timers before scheduling new ones
-    timeoutsRef.current.forEach(clearTimeout);
-    timeoutsRef.current = [];
+    const timeouts: NodeJS.Timeout[] = [];
 
     interactions.forEach(interaction => {
       const timeout = setTimeout(() => {
-        if (import.meta.env.DEV) {
-          console.debug('[Orchestrator] Triggering interaction', interaction.id, interaction);
-        }
+        console.debug('[Orchestrator] Triggering interaction', interaction.id, interaction);
         setActiveInteractions(prev => [...prev, interaction]);
         
         triggerBeat({
@@ -85,33 +79,25 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
         });
 
         // Remove interaction after its duration
-        const rmTimeout = setTimeout(() => {
+        setTimeout(() => {
           setActiveInteractions(prev => prev.filter(i => i.id !== interaction.id));
         }, interaction.duration);
-
-        // Nested timers won't be cleared by the outer timeout, so track them
-        // to ensure they don't fire after unmount or re-render
-        timeoutsRef.current.push(rmTimeout);
       }, interaction.delay);
 
-      timeoutsRef.current.push(timeout);
+      timeouts.push(timeout);
     });
 
     // Trigger completion
     const totalDuration = Math.max(...interactions.map(i => i.delay + i.duration));
     const completeTimeout = setTimeout(() => {
-      if (import.meta.env.DEV) {
-        console.debug('[Orchestrator] Sequence complete for', serviceType);
-      }
+      console.debug('[Orchestrator] Sequence complete for', serviceType);
       onComplete?.();
     }, totalDuration + 500);
 
-    timeoutsRef.current.push(completeTimeout);
+    timeouts.push(completeTimeout);
 
     return () => {
-      // Cancel any pending timeouts including nested removal timers
-      timeoutsRef.current.forEach(clearTimeout);
-      timeoutsRef.current = [];
+      timeouts.forEach(clearTimeout);
       setActiveInteractions([]);
     };
   }, [isActive, serviceType, isSeriousMode, triggerBeat, onComplete]);
@@ -123,21 +109,11 @@ export const MicroInteractionOrchestrator: React.FC<MicroInteractionProps> = ({
     const extra: InteractionBeat = serviceType === 'pest'
       ? { id: `manual-pest-${now}`, delay: 0, duration: 1500, type: 'pest-retreat', message: 'Pests retreat!', position: { x: 60, y: 30 } }
       : { id: `manual-sparkle-${now}`, delay: 0, duration: 1300, type: 'sparkle-burst', message: 'Extra sparkle!', position: { x: 55, y: 45 } };
-    if (import.meta.env.DEV) {
-      console.debug('[Orchestrator] Manual trigger', extra.id, extra);
-    }
+    console.debug('[Orchestrator] Manual trigger', extra.id, extra);
     setActiveInteractions(prev => [...prev, extra]);
     triggerBeat({ id: extra.id, timestamp: now, type: 'interaction', content: extra.message, position: extra.position });
-    manualTimeoutRef.current = setTimeout(() =>
-      setActiveInteractions(prev => prev.filter(i => i.id !== extra.id)),
-      extra.duration
-    );
-    return () => {
-      if (manualTimeoutRef.current) {
-        clearTimeout(manualTimeoutRef.current);
-        manualTimeoutRef.current = null;
-      }
-    };
+    const rm = setTimeout(() => setActiveInteractions(prev => prev.filter(i => i.id !== extra.id)), extra.duration);
+    return () => clearTimeout(rm);
   }, [manualTriggerKey, isSeriousMode, serviceType, triggerBeat]);
 
   const renderInteraction = (interaction: InteractionBeat) => {
