@@ -11,7 +11,6 @@ import { SqueegeEffectOverlay } from '@/components/anime/SqueegeEffectOverlay';
 import { PoolRippleTransition } from '@/components/anime/RippleTransition';
 import { ScrollTriggeredAnimation } from '@/components/anime/ScrollTriggeredAnimation';
 import { BuildyMascot } from '@/components/anime/BuildyMascot';
-import { SafeImage } from '@/components/ui/safe-image';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import buildyPoolImage from '@/assets/buildy-pool.png';
 
@@ -206,9 +205,9 @@ const Pool = () => {
                   
                   {/* Trust Badges */}
                   <div className="flex items-center gap-4">
-                    <SafeImage src="/anime/badges/uae-certified.png" alt="UAE Certified" className="w-10 h-10" />
-                    <SafeImage src="/anime/badges/family-safe.png" alt="Family Safe" className="w-10 h-10" />
-                    <SafeImage src="/anime/badges/24-7-service.png" alt="24/7 Service" className="w-10 h-10" />
+                    <img src="/anime/badges/uae-certified.png" alt="UAE Certified" className="w-10 h-10" />
+                    <img src="/anime/badges/family-safe.png" alt="Family Safe" className="w-10 h-10" />
+                    <img src="/anime/badges/24-7-service.png" alt="24/7 Service" className="w-10 h-10" />
                   </div>
                 </motion.div>
 
@@ -414,9 +413,9 @@ const Pool = () => {
                   <div className="grid grid-cols-2 h-48">
                     <div className="relative">
                       <div className="absolute inset-0 bg-gradient-to-r from-red-500/20 to-transparent z-10" />
-                      <SafeImage
-                        src="/anime/illustrations/pool-service-scene.png"
-                        alt="Before"
+                      <img 
+                        src="/anime/illustrations/pool-service-scene.png" 
+                        alt="Before" 
                         className="w-full h-full object-cover opacity-60"
                       />
                       <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-semibold">
@@ -425,9 +424,9 @@ const Pool = () => {
                     </div>
                     <div className="relative">
                       <div className="absolute inset-0 bg-gradient-to-l from-green-500/20 to-transparent z-10" />
-                      <SafeImage
-                        src="/anime/illustrations/pool-service-scene.png"
-                        alt="After"
+                      <img 
+                        src="/anime/illustrations/pool-service-scene.png" 
+                        alt="After" 
                         className="w-full h-full object-cover"
                       />
                       <div className="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded text-xs font-semibold">

@@ -4,11 +4,6 @@ import Lottie, { LottieRefCurrentProps } from 'lottie-react';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { SafeImage } from '@/components/ui/safe-image';
 
-// Resolve asset paths respecting Vite's base URL. This prevents broken
-// references when the app is served from a subdirectory.
-const resolveAsset = (path: string) =>
-  `${import.meta.env.BASE_URL.replace(/\/$/, '')}/${path.replace(/^\//, '')}`;
-
 interface LottieAnimationProps {
   animationPath: string;
   fallbackImage?: string;
@@ -22,15 +17,14 @@ interface LottieAnimationProps {
 }
 
 // Module-level cache so animations are loaded once per session
-// Lottie JSON files live in `src/anime` so they can be imported as modules
-const rawAnimationModules = import.meta.glob('/src/anime/**/*.json', {
+const rawAnimationModules = import.meta.glob('/public/anime/**/*.json', {
   import: 'default'
 });
 
 const animationModules: Record<string, () => Promise<unknown>> = {};
 Object.keys(rawAnimationModules).forEach((key) => {
-  // Drop the `/src` prefix so callers can use paths like `/anime/foo.json`
-  animationModules[key.replace(/^\/src/, '')] = rawAnimationModules[key];
+  // Drop the `/public` prefix so callers can use paths like `/anime/foo.json`
+  animationModules[key.replace(/^\/public/, '')] = rawAnimationModules[key];
 });
 
 const animationCache: Record<string, Promise<unknown>> = {};
@@ -79,10 +73,6 @@ export const LottieAnimation = ({
   };
 
   const maxSizeStyle = maxSize ? { maxWidth: `${maxSize}px`, maxHeight: `${maxSize}px` } : {};
-
-  const resolvedFallback = resolveAsset(
-    fallbackImage || '/anime/static/buildy-static.png'
-  );
 
   // Load Lottie animation data using dynamic import
   useEffect(() => {
@@ -172,9 +162,9 @@ export const LottieAnimation = ({
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <SafeImage
-          src={resolvedFallback}
-          alt="Service illustration"
+        <SafeImage 
+          src={fallbackImage || '/anime/static/buildy-static.png'} 
+          alt="Service illustration" 
           className="w-full h-full object-contain"
         />
       </motion.div>
@@ -183,14 +173,14 @@ export const LottieAnimation = ({
 
   if (useFallback || !animationData) {
     return (
-      <motion.div
+      <motion.div 
         className={`${sizeClasses[size]} ${className} flex items-center justify-center`}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
       >
-        <SafeImage
-          src={resolvedFallback}
+        <SafeImage 
+          src={fallbackImage || '/anime/static/buildy-static.png'}
           alt="Service illustration"
           className="w-full h-full object-contain"
         />
@@ -275,7 +265,7 @@ export const preloadLottieAssets = async (animationPath: string, fallbackImage?:
     // Preload fallback image
     if (fallbackImage) {
       const img = new Image();
-      img.src = resolveAsset(fallbackImage);
+      img.src = fallbackImage;
     }
   } catch (error) {
     console.warn('Preload failed for:', animationPath, error);

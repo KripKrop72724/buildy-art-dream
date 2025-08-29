@@ -1,6 +1,5 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { SafeImage } from "@/components/ui/safe-image";
 
 interface MascotCardProps {
   title: string;
@@ -22,8 +21,8 @@ export const MascotCard = ({ title, description, image, variant, features }: Mas
     <Card className={`mascot-card border-2 ${variantClasses[variant]} transition-all duration-300 hover:shadow-xl`}>
       <div className="p-6 text-center">
         <div className="relative mb-6">
-          <SafeImage
-            src={image}
+          <img 
+            src={image} 
             alt={title}
             className="w-32 h-32 mx-auto object-contain animate-float"
           />

@@ -1,5 +1,4 @@
 import { Card } from "@/components/ui/card";
-import { SafeImage } from "@/components/ui/safe-image";
 import cureRatsImage from "@/assets/cure-rats.png";
 import sadRoachImage from "@/assets/sad-roach.png";
 
@@ -9,8 +8,8 @@ export const CharacterShowcase = () => {
       <Card className="mascot-card border-2 border-secondary/30 hover:border-secondary/50">
         <div className="p-6 text-center">
           <div className="relative mb-6">
-            <SafeImage
-              src={cureRatsImage}
+            <img 
+              src={cureRatsImage} 
               alt="Cure Rats Team"
               className="w-full max-w-sm mx-auto object-contain rounded-mascot"
             />
@@ -44,8 +43,8 @@ export const CharacterShowcase = () => {
       <Card className="mascot-card border-2 border-destructive/30 hover:border-destructive/50">
         <div className="p-6 text-center">
           <div className="relative mb-6">
-            <SafeImage
-              src={sadRoachImage}
+            <img 
+              src={sadRoachImage} 
               alt="Sad Roach Character"
               className="w-32 h-32 mx-auto object-contain animate-wiggle"
             />
